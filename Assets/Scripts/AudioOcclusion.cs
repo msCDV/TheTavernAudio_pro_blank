@@ -8,7 +8,7 @@ public class AudioOcclusion : MonoBehaviour
     [Header("FMOD Event")]
     //[SerializeField]
     //private EventReference SelectAudio;
-    //private EventInstance Audio;
+    //private EventInstance eventInstance;
     [SerializeField]
     private StudioEventEmitter eventEmitterMusic;
     private EventInstance eventInstance;
