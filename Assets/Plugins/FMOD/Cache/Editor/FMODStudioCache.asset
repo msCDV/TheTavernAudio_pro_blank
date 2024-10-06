@@ -300,13 +300,12 @@ MonoBehaviour:
   - {fileID: -8738744131178787348}
   - {fileID: -3830263011273236712}
   - {fileID: 7135225841413685832}
-  - {fileID: 3804275430482925606}
   EditorParameters: []
   MasterBanks:
   - {fileID: 6900061559170321601}
   StringsBanks:
   - {fileID: 3545289254276253663}
-  cacheTime: 638637610896120375
+  cacheTime: 638638182930023020
   cacheVersion: 131617
 --- !u!114 &567341133767377534
 MonoBehaviour:
@@ -481,39 +480,11 @@ MonoBehaviour:
   Path: FMOD Studio/Tavern/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638637610896120375
+  lastModified: 638638182930023020
   FileSizes:
   - Name: Desktop
-    Value: 2032
+    Value: 1948
   Exists: 1
---- !u!114 &3804275430482925606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/Spell
-  m_EditorClassIdentifier: 
-  Path: event:/Spell
-  Guid:
-    Data1: 1965044991
-    Data2: 1329734166
-    Data3: -288031562
-    Data4: 587731880
-  Banks:
-  - {fileID: 6900061559170321601}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 0
-  Parameters:
-  - {fileID: 7444604227911041314}
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 2281
 --- !u!114 &4173816062126049097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,10 +556,10 @@ MonoBehaviour:
   Path: FMOD Studio/Tavern/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638637610896120375
+  lastModified: 638638182929997950
   FileSizes:
   - Name: Desktop
-    Value: 6208672
+    Value: 6206400
   Exists: 1
 --- !u!114 &6954510192736954330
 MonoBehaviour:
@@ -643,32 +614,6 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 0
---- !u!114 &7444604227911041314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
-  m_Name: parameter:/Spell/Spell
-  m_EditorClassIdentifier: 
-  Name: Spell
-  StudioPath: 
-  Min: 0
-  Max: 1
-  Default: 0
-  ID:
-    data1: 352127068
-    data2: 3574177585
-  Type: 2
-  IsGlobal: 0
-  Labels:
-  - Looping
-  - Release
-  Exists: 1
 --- !u!114 &7840059489574424299
 MonoBehaviour:
   m_ObjectHideFlags: 0
