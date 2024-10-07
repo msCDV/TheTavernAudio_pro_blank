@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|c:\\unity 2024\\github\\thetavernaudio_pro_blank\\assets\\scripts\\spellcast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\spellcast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|c:\\unity 2024\\github\\thetavernaudio_pro_blank\\assets\\scripts\\audioocclusion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\audioocclusion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|c:\\unity 2024\\github\\thetavernaudio_pro_blank\\assets\\scripts\\fmod_commands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BC97150-CF6C-8A8D-546A-47FB68438E54}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\fmod_commands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,12 +27,38 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "SpellCast.cs",
+              "DocumentMoniker": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\SpellCast.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\SpellCast.cs",
+              "ToolTip": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\SpellCast.cs",
+              "RelativeToolTip": "Assets\\Scripts\\SpellCast.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADsAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-07T09:44:30.924Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FMOD_Commands.cs",
+              "DocumentMoniker": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\FMOD_Commands.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\FMOD_Commands.cs",
+              "ToolTip": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\FMOD_Commands.cs",
+              "RelativeToolTip": "Assets\\Scripts\\FMOD_Commands.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-07T09:40:28.232Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "AudioOcclusion.cs",
               "DocumentMoniker": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\AudioOcclusion.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AudioOcclusion.cs",
               "ToolTip": "C:\\Unity 2024\\GitHub\\TheTavernAudio_pro_blank\\Assets\\Scripts\\AudioOcclusion.cs",
               "RelativeToolTip": "Assets\\Scripts\\AudioOcclusion.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAApAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAIoAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-06T11:11:14.325Z",
               "EditorCaption": ""

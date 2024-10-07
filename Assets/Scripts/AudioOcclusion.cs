@@ -5,16 +5,10 @@ using System.ComponentModel;
 
 public class AudioOcclusion : MonoBehaviour
 {
-    [Header("FMOD Event")]
-    //[SerializeField]
-    //private EventReference SelectAudio;
-    //private EventInstance eventInstance;
-    [SerializeField]
-    private StudioEventEmitter eventEmitterMusic;
-    private EventInstance eventInstance;
-    private EventDescription eventDes;
-    private StudioListener listener;
-    private PLAYBACK_STATE pb;
+    #region KOD DO UZUPE£NIENIA // ENG - CODE TO COMPLETE
+
+
+    #endregion
 
     [Header("Occlusion Options")]
     [SerializeField]
@@ -43,16 +37,15 @@ public class AudioOcclusion : MonoBehaviour
         //Audio.getDescription(out AudioDes);
         //Audio.getMinMaxDistance(out MinDistance, out MaxDistance);
 
-        eventInstance = eventEmitterMusic.EventInstance;
+        #region KOD DO UZUPE£NIENIA // ENG - CODE TO COMPLETE
+
+        eventInstance = ... ;
         eventInstance.getDescription(out eventDes);
         eventDes.getMinMaxDistance(out minDistance, out maxDistance);
 
-        Debug.Log(eventDes + " " + minDistance + " " + maxDistance);
+        listener = ... ;
 
-        //eventDes = RuntimeManager.GetEventDescription(SelectAudio);
-        //eventDes.getMinMaxDistance(out minDistance, out maxDistance);
-
-        listener = FindObjectOfType<StudioListener>();
+        #endregion
     }
 
     private void FixedUpdate()
@@ -146,7 +139,10 @@ public class AudioOcclusion : MonoBehaviour
 
     private void SetParameter()
     {
-        eventInstance.setParameterByName("Occlusion", lineCastHitCount / 11);
-        //Debug.Log("SET");
+        # region KOD DO UZUPE£NIENIA // ENG - CODE TO COMPLETE
+
+        eventInstance.setParameterByName(...);
+
+        #endregion
     }
 }
