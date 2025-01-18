@@ -24,7 +24,7 @@ namespace FMODUnity
 
         public void DrawLayout()
         {
-            Rect rect = EditorGUILayout.GetControlRect(false, GetHeight());
+            var rect = EditorGUILayout.GetControlRect(false, GetHeight());
 
             labelRight = rect.x + EditorGUIUtility.labelWidth;
 

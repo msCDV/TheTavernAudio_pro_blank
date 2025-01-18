@@ -65,9 +65,9 @@ namespace FMODUnity
                     return;
                 }
 
-                string projectPath = settings.SourceProjectPath;
-                string projectFolder = Path.GetDirectoryName(projectPath);
-                string buildFolder = RuntimeUtils.GetCommonPlatformPath(Path.Combine(projectFolder, BuildFolder));
+                var projectPath = settings.SourceProjectPath;
+                var projectFolder = Path.GetDirectoryName(projectPath);
+                var buildFolder = RuntimeUtils.GetCommonPlatformPath(Path.Combine(projectFolder, BuildFolder));
                 if (!Directory.Exists(buildFolder) ||
                     Directory.GetDirectories(buildFolder).Length == 0 ||
                     Directory.GetFiles(Directory.GetDirectories(buildFolder)[0], "*.bank", SearchOption.AllDirectories).Length == 0
@@ -116,14 +116,14 @@ namespace FMODUnity
 
         public static string[] GetBankPlatforms()
         {
-            string buildFolder = Settings.Instance.SourceBankPath;
+            var buildFolder = Settings.Instance.SourceBankPath;
             try
             {
                 if (Directory.GetFiles(buildFolder, "*.bank").Length == 0)
                 {
-                    string[] buildDirectories = Directory.GetDirectories(buildFolder);
-                    string[] buildNames = new string[buildDirectories.Length];
-                    for (int i = 0; i < buildDirectories.Length; i++)
+                    var buildDirectories = Directory.GetDirectories(buildFolder);
+                    var buildNames = new string[buildDirectories.Length];
+                    for (var i = 0; i < buildDirectories.Length; i++)
                     {
                         buildNames[i] = Path.GetFileNameWithoutExtension(buildDirectories[i]);
                     }
@@ -138,17 +138,17 @@ namespace FMODUnity
 
         public static string VersionString(uint version)
         {
-            uint major = (version & 0x00FF0000) >> 16;
-            uint minor = (version & 0x0000FF00) >> 8;
-            uint patch = (version & 0x000000FF);
+            var major = (version & 0x00FF0000) >> 16;
+            var minor = (version & 0x0000FF00) >> 8;
+            var patch = (version & 0x000000FF);
 
             return string.Format("{0:X1}.{1:X2}.{2:X2}", major, minor, patch);
         }
 
         public static string DurationString(float seconds)
         {
-            float minutes = seconds / 60;
-            float hours = minutes / 60;
+            var minutes = seconds / 60;
+            var hours = minutes / 60;
 
             if (hours >= 1)
             {
@@ -191,7 +191,7 @@ namespace FMODUnity
 
         public static Texture2D LoadImage(string filename)
         {
-            Texture2D texture = EditorGUIUtility.Load($"{RuntimeUtils.PluginBasePath}/images/{filename}") as Texture2D;
+            var texture = EditorGUIUtility.Load($"{RuntimeUtils.PluginBasePath}/images/{filename}") as Texture2D;
 
             if (texture == null)
             {
@@ -203,9 +203,9 @@ namespace FMODUnity
 
         public static string GameObjectPath(Component component, GameObject root = null)
         {
-            Transform transform = component.transform;
+            var transform = component.transform;
 
-            StringBuilder objectPath = new StringBuilder();
+            var objectPath = new StringBuilder();
 
             while(transform != null && transform.gameObject != root)
             {
@@ -225,14 +225,14 @@ namespace FMODUnity
         public static bool HasAttribute<T>(MemberInfo member)
             where T : Attribute
         {
-            Attribute[] attributes = Attribute.GetCustomAttributes(member, typeof(Attribute), true);
+            var attributes = Attribute.GetCustomAttributes(member, typeof(Attribute), true);
 
             return attributes.Any(a => typeof(T).IsAssignableFrom(a.GetType()));
         }
 
         public static bool AssetExists(string path)
         {
-            string fullPath = $"{Environment.CurrentDirectory}/{path}";
+            var fullPath = $"{Environment.CurrentDirectory}/{path}";
 
             // We check that the file or directory exists as well because recently deleted assets remain in the database
             return !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(path))
@@ -243,11 +243,11 @@ namespace FMODUnity
         {
             if (!AssetDatabase.IsValidFolder(folderPath))
             {
-                string parentFolder = GetParentFolder(folderPath);
+                var parentFolder = GetParentFolder(folderPath);
 
                 EnsureFolderExists(parentFolder);
 
-                string folderName = Path.GetFileName(folderPath);
+                var folderName = Path.GetFileName(folderPath);
 
                 AssetDatabase.CreateFolder(parentFolder, folderName);
             }
@@ -257,7 +257,7 @@ namespace FMODUnity
         // so we have to roll our own.
         public static string GetParentFolder(string assetPath)
         {
-            int endIndex = assetPath.LastIndexOf('/');
+            var endIndex = assetPath.LastIndexOf('/');
 
             return (endIndex > 0) ? assetPath.Substring(0, endIndex) : string.Empty;
         }
@@ -271,12 +271,12 @@ namespace FMODUnity
 
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    GUIContent content = new GUIContent(
+                    var content = new GUIContent(
                         string.Format("Will be migrated to <b>{0}</b>", migrationTarget),
                         EditorGUIUtility.IconContent("console.infoicon.sml").image);
-                    GUIStyle style = new GUIStyle(GUI.skin.label) { richText = true };
+                    var style = new GUIStyle(GUI.skin.label) { richText = true };
 
-                    Rect rect = EditorGUILayout.GetControlRect(false, style.CalcSize(content).y);
+                    var rect = EditorGUILayout.GetControlRect(false, style.CalcSize(content).y);
                     rect = EditorGUI.IndentedRect(rect);
 
                     GUI.Label(rect, content, style);
@@ -288,9 +288,9 @@ namespace FMODUnity
         // and returns a rect describing the remaining space.
         public static Rect DrawHelpButtonLayout(Func<PopupWindowContent> createContent)
         {
-            Vector2 helpSize = GetHelpButtonSize();
+            var helpSize = GetHelpButtonSize();
 
-            Rect rect = EditorGUILayout.GetControlRect(true, helpSize.y);
+            var rect = EditorGUILayout.GetControlRect(true, helpSize.y);
 
             return DrawHelpButton(rect, createContent);
         }
@@ -301,9 +301,9 @@ namespace FMODUnity
             GUIStyle style;
             GetHelpButtonData(out content, out style);
 
-            Vector2 helpSize = style.CalcSize(content);
+            var helpSize = style.CalcSize(content);
 
-            Rect helpRect = rect;
+            var helpRect = rect;
             helpRect.xMin = helpRect.xMax - helpSize.x;
 
             if (GUI.Button(helpRect, content, style))
@@ -311,7 +311,7 @@ namespace FMODUnity
                 PopupWindow.Show(helpRect, createContent());
             }
 
-            Rect remainderRect = rect;
+            var remainderRect = rect;
             remainderRect.xMax = helpRect.xMin;
 
             return remainderRect;
@@ -410,7 +410,7 @@ namespace FMODUnity
                 }
             }
 
-            for (int i = 0; i < previewEventInstances.Count; i++)
+            for (var i = 0; i < previewEventInstances.Count; i++)
             {
                 var instance = previewEventInstances[i];
                 if (instance.isValid())
@@ -451,17 +451,17 @@ namespace FMODUnity
             // Register timeline event receivers.
             FMODEventPlayableBehavior.Enter += (sender, args) =>
             {
-                FMODEventPlayableBehavior behavior = sender as FMODEventPlayableBehavior;
+                var behavior = sender as FMODEventPlayableBehavior;
                 if (!string.IsNullOrEmpty(behavior.EventReference.Path))
                 {
                     LoadPreviewBanks();
-                    EditorEventRef eventRef = EventManager.EventFromPath(behavior.EventReference.Path);
-                    Dictionary<string, float> paramValues = new Dictionary<string, float>();
-                    foreach (EditorParamRef param in eventRef.Parameters)
+                    var eventRef = EventManager.EventFromPath(behavior.EventReference.Path);
+                    var paramValues = new Dictionary<string, float>();
+                    foreach (var param in eventRef.Parameters)
                     {
                         paramValues.Add(param.Name, param.Default);
                     }
-                    foreach (ParamRef param in behavior.Parameters)
+                    foreach (var param in behavior.Parameters)
                     {
                         paramValues[param.Name] = param.Value;
                     }
@@ -472,10 +472,10 @@ namespace FMODUnity
 
             FMODEventPlayableBehavior.Exit += (sender, args) =>
             {
-                FMODEventPlayableBehavior behavior = sender as FMODEventPlayableBehavior;
+                var behavior = sender as FMODEventPlayableBehavior;
                 if (behavior.StopType != STOP_MODE.None)
                 {
-                    FMOD.Studio.STOP_MODE stopType = behavior.StopType == STOP_MODE.Immediate ? FMOD.Studio.STOP_MODE.IMMEDIATE : FMOD.Studio.STOP_MODE.ALLOWFADEOUT;
+                    var stopType = behavior.StopType == STOP_MODE.Immediate ? FMOD.Studio.STOP_MODE.IMMEDIATE : FMOD.Studio.STOP_MODE.ALLOWFADEOUT;
                     PreviewStop(args.eventInstance, stopType);
                 }
             };
@@ -487,7 +487,7 @@ namespace FMODUnity
 
             FMODEventPlayable.OnCreatePlayable += (sender, args) =>
             {
-                FMODEventPlayable playable = sender as FMODEventPlayable;
+                var playable = sender as FMODEventPlayable;
                 if (playable.Parameters.Length > 0 || playable.Template.ParameterLinks.Count > 0)
                 {
                     LoadPreviewBanks();
@@ -528,7 +528,7 @@ namespace FMODUnity
             RuntimeUtils.DebugLog("FMOD Studio: Creating editor system instance");
             RuntimeUtils.EnforceLibraryOrder();
 
-            FMOD.RESULT result = FMOD.Debug.Initialize(FMOD.DEBUG_FLAGS.LOG, FMOD.DEBUG_MODE.FILE, null, "fmod_editor.log");
+            var result = FMOD.Debug.Initialize(FMOD.DEBUG_FLAGS.LOG, FMOD.DEBUG_MODE.FILE, null, "fmod_editor.log");
             if (result != FMOD.RESULT.OK)
             {
                 RuntimeUtils.DebugLogWarning("FMOD Studio: Cannot open fmod_editor.log. Logging will be disabled for importing and previewing");
@@ -546,7 +546,7 @@ namespace FMODUnity
             encryptionKey = Settings.Instance.EncryptionKey;
             if (!string.IsNullOrEmpty(encryptionKey))
             {
-                FMOD.Studio.ADVANCEDSETTINGS studioAdvancedSettings = new FMOD.Studio.ADVANCEDSETTINGS();
+                var studioAdvancedSettings = new FMOD.Studio.ADVANCEDSETTINGS();
                 CheckResult(system.setAdvancedSettings(studioAdvancedSettings, encryptionKey));
             }
 
@@ -591,11 +591,11 @@ namespace FMODUnity
                 return;
             }
 
-            for (int i = 0; i < emitter.Params.Length; i++)
+            for (var i = 0; i < emitter.Params.Length; i++)
             {
                 if (!eventRef.LocalParameters.Exists((x) => x.Name == emitter.Params[i].Name))
                 {
-                    int end = emitter.Params.Length - 1;
+                    var end = emitter.Params.Length - 1;
                     emitter.Params[i] = emitter.Params[end];
                     Array.Resize<ParamRef>(ref emitter.Params, end);
                     i--;
@@ -652,7 +652,7 @@ namespace FMODUnity
         public static void OpenOnlineDocumentation(string section, string page = null, string anchor = null)
         {
             const string Prefix = "https://fmod.com/docs/";
-            string version = string.Format("{0:X}.{1:X}", FMOD.VERSION.number >> 16, (FMOD.VERSION.number >> 8) & 0xFF);
+            var version = string.Format("{0:X}.{1:X}", FMOD.VERSION.number >> 16, (FMOD.VERSION.number >> 8) & 0xFF);
             string url;
 
             if (!string.IsNullOrEmpty(page))
@@ -683,7 +683,7 @@ namespace FMODUnity
             uint version;
             CheckResult(lowlevel.getVersion(out version));
 
-            string text = string.Format(
+            var text = string.Format(
                 "Version: {0}\n\nCopyright \u00A9 Firelight Technologies Pty, Ltd. 2014-2024 \n\n" +
                 "See LICENSE.TXT for additional license information.",
                 VersionString(version));
@@ -708,7 +708,7 @@ namespace FMODUnity
             foreach (var bank in EventManager.Banks)
             {
                 FMOD.Studio.Bank previewBank;
-                FMOD.RESULT result = System.loadBankFile(bank.Path, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out previewBank);
+                var result = System.loadBankFile(bank.Path, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out previewBank);
                 if (result != FMOD.RESULT.ERR_EVENT_ALREADY_LOADED) // ignore error when a bank is already loaded, e.g. localized banks.
                 {
                     CheckResult(result);
@@ -736,7 +736,7 @@ namespace FMODUnity
             CheckResult(System.getEventByID(eventRef.Guid, out eventDescription));
             CheckResult(eventDescription.createInstance(out eventInstance));
 
-            foreach (EditorParamRef param in eventRef.Parameters)
+            foreach (var param in eventRef.Parameters)
             {
                 FMOD.Studio.PARAMETER_DESCRIPTION paramDesc;
                 if (param.IsGlobal)
@@ -748,7 +748,7 @@ namespace FMODUnity
                     CheckResult(eventDescription.getParameterDescriptionByName(param.Name, out paramDesc));
                 }
 
-                float value = previewParamValues.ContainsKey(param.Name) ? previewParamValues[param.Name] : param.Default;
+                var value = previewParamValues.ContainsKey(param.Name) ? previewParamValues[param.Name] : param.Default;
                 param.ID = paramDesc.id;
 
                 if (param.IsGlobal)
@@ -796,7 +796,7 @@ namespace FMODUnity
 
         public static void StopAllPreviews()
         {
-            foreach (FMOD.Studio.EventInstance eventInstance in previewEventInstances)
+            foreach (var eventInstance in previewEventInstances)
             {
                 PreviewStop(eventInstance);
             }
@@ -820,7 +820,7 @@ namespace FMODUnity
             int channels;
             lowlevel.getSpeakerModeChannels(mode, out channels);
 
-            float[] data = new float[channels];
+            var data = new float[channels];
             if (outputMetering.numchannels > 0)
             {
                 Array.Copy(outputMetering.rmslevel, data, channels);
@@ -851,9 +851,9 @@ namespace FMODUnity
 
                         networkStream = new NetworkStream(socket);
 
-                        byte[] headerBytes = new byte[128];
-                        int read = ScriptStream.Read(headerBytes, 0, 128);
-                        string header = Encoding.UTF8.GetString(headerBytes, 0, read - 1);
+                        var headerBytes = new byte[128];
+                        var read = ScriptStream.Read(headerBytes, 0, 128);
+                        var header = Encoding.UTF8.GetString(headerBytes, 0, read - 1);
                         if (header.StartsWith("log():"))
                         {
                             RuntimeUtils.DebugLog("FMOD Studio: Script Client returned " + header.Substring(6));
@@ -919,13 +919,13 @@ namespace FMODUnity
 
         public static bool SendScriptCommand(string command)
         {
-            byte[] commandBytes = Encoding.UTF8.GetBytes(command);
+            var commandBytes = Encoding.UTF8.GetBytes(command);
             try
             {
                 ScriptStream.Write(commandBytes, 0, commandBytes.Length);
-                byte[] commandReturnBytes = new byte[128];
-                int read = ScriptStream.Read(commandReturnBytes, 0, 128);
-                string result = Encoding.UTF8.GetString(commandReturnBytes, 0, read - 1);
+                var commandReturnBytes = new byte[128];
+                var read = ScriptStream.Read(commandReturnBytes, 0, 128);
+                var result = Encoding.UTF8.GetString(commandReturnBytes, 0, read - 1);
                 return (result.Contains("true"));
             }
             catch (Exception)
@@ -942,13 +942,13 @@ namespace FMODUnity
 
         public static string GetScriptOutput(string command)
         {
-            byte[] commandBytes = Encoding.UTF8.GetBytes(command);
+            var commandBytes = Encoding.UTF8.GetBytes(command);
             try
             {
                 ScriptStream.Write(commandBytes, 0, commandBytes.Length);
-                byte[] commandReturnBytes = new byte[2048];
-                int read = ScriptStream.Read(commandReturnBytes, 0, commandReturnBytes.Length);
-                string result = Encoding.UTF8.GetString(commandReturnBytes, 0, read - 1);
+                var commandReturnBytes = new byte[2048];
+                var read = ScriptStream.Read(commandReturnBytes, 0, commandReturnBytes.Length);
+                var result = Encoding.UTF8.GetString(commandReturnBytes, 0, read - 1);
                 if (result.StartsWith("out():"))
                 {
                     return result.Substring(6).Trim();
@@ -966,14 +966,14 @@ namespace FMODUnity
         private static string GetMasterBank()
         {
             GetScriptOutput(string.Format("masterBankFolder = studio.project.workspace.masterBankFolder;"));
-            string bankCountString = GetScriptOutput(string.Format("masterBankFolder.items.length;"));
-            int bankCount = int.Parse(bankCountString);
-            for (int i = 0; i < bankCount; i++)
+            var bankCountString = GetScriptOutput(string.Format("masterBankFolder.items.length;"));
+            var bankCount = int.Parse(bankCountString);
+            for (var i = 0; i < bankCount; i++)
             {
-                string isMaster = GetScriptOutput(string.Format("masterBankFolder.items[{1}].isOfExactType(\"MasterBank\");", i));
+                var isMaster = GetScriptOutput(string.Format("masterBankFolder.items[{1}].isOfExactType(\"MasterBank\");", i));
                 if (isMaster == "true")
                 {
-                    string guid = GetScriptOutput(string.Format("masterBankFolder.items[{1}].id;", i));
+                    var guid = GetScriptOutput(string.Format("masterBankFolder.items[{1}].id;", i));
                     return guid;
                 }
             }
@@ -991,14 +991,14 @@ namespace FMODUnity
                     return nameConflict;
                 }";
 
-            string conflictBool = GetScriptOutput(string.Format("({0})(\"{1}\", \"{2}\")", checkForNameConflictFunc, folderGuid, eventName));
+            var conflictBool = GetScriptOutput(string.Format("({0})(\"{1}\", \"{2}\")", checkForNameConflictFunc, folderGuid, eventName));
             return conflictBool == "1";
         }
 
         public static string CreateStudioEvent(string eventPath, string eventName)
         {
             var folders = eventPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            string folderGuid = GetScriptOutput("studio.project.workspace.masterEventFolder.id;");
+            var folderGuid = GetScriptOutput("studio.project.workspace.masterEventFolder.id;");
 
             const string getFolderGuidFunc =
                 @"function(parentGuid, folderName) {
@@ -1016,9 +1016,9 @@ namespace FMODUnity
                     return folderGuid;
                 }";
 
-            for (int i = 0; i < folders.Length; i++)
+            for (var i = 0; i < folders.Length; i++)
             {
-                string parentGuid = folderGuid;
+                var parentGuid = folderGuid;
                 folderGuid = GetScriptOutput(string.Format("({0})(\"{1}\", \"{2}\")", getFolderGuidFunc, parentGuid, folders[i]));
             }
 
@@ -1048,7 +1048,7 @@ namespace FMODUnity
                     return event.id;
                 }";
 
-            string eventGuid = GetScriptOutput(string.Format("({0})(\"{1}\", \"{2}\")", createEventFunc, eventName, folderGuid));
+            var eventGuid = GetScriptOutput(string.Format("({0})(\"{1}\", \"{2}\")", createEventFunc, eventName, folderGuid));
             return eventGuid;
         }
 
@@ -1063,7 +1063,7 @@ namespace FMODUnity
         {
             if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(RuntimeUtils.BaseFolderGUID)))
             {
-                string folderPath = RuntimeUtils.PluginBasePathDefault;
+                var folderPath = RuntimeUtils.PluginBasePathDefault;
 
                 if (!Directory.Exists(folderPath))
                 {
@@ -1074,7 +1074,7 @@ namespace FMODUnity
 
                 const string DialogTitle = "Update FMOD Folder Metadata";
 
-                bool update = EditorUtility.DisplayDialog(DialogTitle,
+                var update = EditorUtility.DisplayDialog(DialogTitle,
                     $"The metadata for the {folderPath} folder needs to be updated"
                     + " so that FMOD can locate required files.\n\n"
                     + "After this change you may move the FMOD folder to any location within your project.",
@@ -1082,7 +1082,7 @@ namespace FMODUnity
 
                 while (update)
                 {
-                    string error = ReplaceMetaFileGUID(folderPath, RuntimeUtils.BaseFolderGUID);
+                    var error = ReplaceMetaFileGUID(folderPath, RuntimeUtils.BaseFolderGUID);
 
                     if (error == null)
                     {
@@ -1100,21 +1100,21 @@ namespace FMODUnity
         {
             try
             {
-                string filePath = $"{assetPath}.meta";
+                var filePath = $"{assetPath}.meta";
 
                 if (!AssetDatabase.MakeEditable(filePath))
                 {
                     return $"Failed to open {filePath} for editing";
                 }
 
-                string[] lines = File.ReadAllLines(filePath);
+                var lines = File.ReadAllLines(filePath);
 
                 const string GuidPrefix = "guid:";
-                bool guidReplaced = false;
+                var guidReplaced = false;
 
-                using (StreamWriter stream = File.CreateText(filePath))
+                using (var stream = File.CreateText(filePath))
                 {
-                    foreach (string line in lines)
+                    foreach (var line in lines)
                     {
                         if (!guidReplaced && line.StartsWith(GuidPrefix))
                         {
@@ -1149,18 +1149,18 @@ namespace FMODUnity
 
         private static void CheckMacLibraries()
         {
-            Platform platformMac = EditorSettings.Instance.GetPlatform(BuildTarget.StandaloneOSX);
+            var platformMac = EditorSettings.Instance.GetPlatform(BuildTarget.StandaloneOSX);
 
-            IEnumerable<string> allLibraries = platformMac.GetBuildTargets()
+            var allLibraries = platformMac.GetBuildTargets()
                 .SelectMany(t => platformMac.GetBinaryAssetPaths(t, Platform.BinaryType.All))
                 .Distinct();
 
-            List<string> librariesToRepair = allLibraries.Where(path => {
-                    string infoPlistPath = $"{path}/Contents/Info.plist";
+            var librariesToRepair = allLibraries.Where(path => {
+                    var infoPlistPath = $"{path}/Contents/Info.plist";
 
                     if (File.Exists(infoPlistPath))
                     {
-                        string contents = File.ReadAllText(infoPlistPath);
+                        var contents = File.ReadAllText(infoPlistPath);
 
                         return contents.Contains("\r\n");
                     }
@@ -1178,7 +1178,7 @@ namespace FMODUnity
 
             const string DialogTitle = "Repair FMOD Libraries";
 
-            bool repair = EditorUtility.DisplayDialog(DialogTitle,
+            var repair = EditorUtility.DisplayDialog(DialogTitle,
                 "The following FMOD libraries contain incorrect line endings, and need to be repaired:\n\n" +
                 $"{string.Join("\n", librariesToRepair)}\n\n" +
                 "Do you want to repair them now?", "Repair", "Ignore");
@@ -1201,16 +1201,16 @@ namespace FMODUnity
 
         private static void RepairMacLibraries(IEnumerable<string> paths)
         {
-            foreach (string path in paths)
+            foreach (var path in paths)
             {
-                string infoPlistPath = $"{path}/Contents/Info.plist";
+                var infoPlistPath = $"{path}/Contents/Info.plist";
 
                 if (!AssetDatabase.MakeEditable(infoPlistPath))
                 {
                     throw new Exception($"Failed to open {infoPlistPath} for editing");
                 }
 
-                string contents = File.ReadAllText(infoPlistPath);
+                var contents = File.ReadAllText(infoPlistPath);
                 contents = contents.Replace("\r\n", "\n");
 
                 File.WriteAllText(infoPlistPath, contents);
@@ -1232,16 +1232,16 @@ namespace FMODUnity
                 return;
             }
 
-            string obsoleteFolder = $"{RuntimeUtils.PluginBasePath}/obsolete";
+            var obsoleteFolder = $"{RuntimeUtils.PluginBasePath}/obsolete";
 
             if (AssetDatabase.IsValidFolder(obsoleteFolder))
             {
                 EditorApplication.LockReloadAssemblies();
 
-                string[] guids = AssetDatabase.FindAssets(string.Empty, new string[] { obsoleteFolder });
-                foreach (string guid in guids)
+                var guids = AssetDatabase.FindAssets(string.Empty, new string[] { obsoleteFolder });
+                foreach (var guid in guids)
                 {
-                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
                     if (AssetDatabase.DeleteAsset(path))
                     {
                         RuntimeUtils.DebugLogFormat("FMOD: Removed obsolete file {0}", path);
@@ -1288,7 +1288,7 @@ namespace FMODUnity
             {
                 return LibrariesToUpdate.Any((info) =>
                 {
-                    string sourcePath = GetSourcePath(info);
+                    var sourcePath = GetSourcePath(info);
 
                     if (sourcePath != null)
                     {
@@ -1313,9 +1313,9 @@ namespace FMODUnity
 
         private static string GetTargetPath(LibInfo libInfo)
         {
-            foreach (Platform.FileLayout layout in Platform.OldFileLayouts)
+            foreach (var layout in Platform.OldFileLayouts)
             {
-                string path = GetTargetPath(libInfo, layout);
+                var path = GetTargetPath(libInfo, layout);
 
                 if (EditorUtils.AssetExists(path))
                 {
@@ -1387,7 +1387,7 @@ namespace FMODUnity
                 description: "Disable the existing FMOD native libraries so that Unity will not load them " +
                     "at startup time.",
                 details: () => {
-                    IEnumerable<PluginImporter> importers =
+                    var importers =
                         LibrariesToUpdate.Select(GetPluginImporter).Where(p => p != null);
 
                     if (!importers.Any())
@@ -1395,14 +1395,14 @@ namespace FMODUnity
                         return string.Empty;
                     }
 
-                    IEnumerable<string> paths = importers.Select(p => $"\n* {p.assetPath}");
+                    var paths = importers.Select(p => $"\n* {p.assetPath}");
 
                     return $"This will disable these native libraries:{string.Join(string.Empty, paths)}";
                 },
                 execute: () => {
-                    foreach (LibInfo libInfo in LibrariesToUpdate)
+                    foreach (var libInfo in LibrariesToUpdate)
                     {
-                        PluginImporter pluginImporter = GetPluginImporter(libInfo);
+                        var pluginImporter = GetPluginImporter(libInfo);
                         if (pluginImporter != null && pluginImporter.GetCompatibleWithEditor())
                         {
                             pluginImporter.SetCompatibleWithEditor(false);
@@ -1439,12 +1439,12 @@ namespace FMODUnity
                 name: "Copy New Native Libraries",
                 description: "Copy the new FMOD native libraries to the correct location and enable them.",
                 details: () => {
-                    List<string> actions = new List<string>();
+                    var actions = new List<string>();
 
-                    foreach (LibInfo libInfo in LibrariesToUpdate)
+                    foreach (var libInfo in LibrariesToUpdate)
                     {
-                        string sourcePath = GetSourcePath(libInfo);
-                        string targetPath = GetTargetPath(libInfo);
+                        var sourcePath = GetSourcePath(libInfo);
+                        var targetPath = GetTargetPath(libInfo);
 
                         if (EditorUtils.AssetExists(sourcePath))
                         {
@@ -1469,12 +1469,12 @@ namespace FMODUnity
                     return $"This will do the following:\n* {string.Join("\n* ", actions)}";
                 },
                 execute: () => {
-                    bool allCopiesSucceeded = true;
+                    var allCopiesSucceeded = true;
 
-                    foreach (LibInfo libInfo in LibrariesToUpdate)
+                    foreach (var libInfo in LibrariesToUpdate)
                     {
-                        string sourcePath = GetSourcePath(libInfo);
-                        string targetPath = GetTargetPath(libInfo);
+                        var sourcePath = GetSourcePath(libInfo);
+                        var targetPath = GetTargetPath(libInfo);
 
                         if (EditorUtils.AssetExists(sourcePath))
                         {
@@ -1497,7 +1497,7 @@ namespace FMODUnity
                             }
                         }
 
-                        PluginImporter pluginImporter = AssetImporter.GetAtPath(targetPath) as PluginImporter;
+                        var pluginImporter = AssetImporter.GetAtPath(targetPath) as PluginImporter;
 
                         if (pluginImporter != null)
                         {
@@ -1534,7 +1534,7 @@ namespace FMODUnity
 
         private static PluginImporter GetPluginImporter(LibInfo libInfo)
         {
-            string targetPath = GetTargetPath(libInfo);
+            var targetPath = GetTargetPath(libInfo);
 
             if (targetPath != null)
             {
@@ -1572,7 +1572,7 @@ namespace FMODUnity
 
             if (Settings.Instance.SharedLibraryUpdateStage == Settings.SharedLibraryUpdateStages.Start)
             {
-                bool targetLibsExist = LibrariesToUpdate.Any(info => GetPluginImporter(info) != null);
+                var targetLibsExist = LibrariesToUpdate.Any(info => GetPluginImporter(info) != null);
 
                 if (targetLibsExist)
                 {
@@ -1601,7 +1601,7 @@ namespace FMODUnity
 
         public static UpdateStep GetNextUpdateStep()
         {
-            UpdateStep step = FindUpdateStep(Settings.Instance.SharedLibraryUpdateStage);
+            var step = FindUpdateStep(Settings.Instance.SharedLibraryUpdateStage);
 
             if (step != null)
             {
@@ -1629,9 +1629,9 @@ namespace FMODUnity
 
         public override Vector2 GetWindowSize()
         {
-            Vector2 contentSize = GetContentSize();
+            var contentSize = GetContentSize();
 
-            Vector2 iconSize = GUI.skin.label.CalcSize(icon);
+            var iconSize = GUI.skin.label.CalcSize(icon);
 
             return new Vector2(contentSize.x + iconSize.x,
                 Math.Max(contentSize.y, iconSize.y) + EditorGUIUtility.standardVerticalSpacing);
@@ -1677,7 +1677,7 @@ namespace FMODUnity
 
         protected override Vector2 GetContentSize()
         {
-            float textHeight = style.CalcHeight(text, textWidth) + style.margin.bottom;
+            var textHeight = style.CalcHeight(text, textWidth) + style.margin.bottom;
 
             return new Vector2(textWidth, textHeight);
         }
@@ -1775,9 +1775,9 @@ namespace FMODUnity
 
         public static int FindArrayIndex(this SerializedProperty array, Func<SerializedProperty, bool> predicate)
         {
-            for (int i = 0; i < array.arraySize; ++i)
+            for (var i = 0; i < array.arraySize; ++i)
             {
-                SerializedProperty current = array.GetArrayElementAtIndex(i);
+                var current = array.GetArrayElementAtIndex(i);
 
                 if (predicate(current))
                 {
@@ -1791,10 +1791,10 @@ namespace FMODUnity
         public static int FindArrayIndex(this SerializedProperty array, string subPropertyName,
             Func<SerializedProperty, bool> predicate)
         {
-            for (int i = 0; i < array.arraySize; ++i)
+            for (var i = 0; i < array.arraySize; ++i)
             {
-                SerializedProperty current = array.GetArrayElementAtIndex(i);
-                SerializedProperty subProperty = current.FindPropertyRelative(subPropertyName);
+                var current = array.GetArrayElementAtIndex(i);
+                var subProperty = current.FindPropertyRelative(subPropertyName);
 
                 if (predicate(subProperty))
                 {
@@ -1839,17 +1839,17 @@ namespace FMODUnity
 
         public static void SetEventReference(this SerializedProperty property, FMOD.GUID guid, string path)
         {
-            SerializedProperty guidProperty = property.FindPropertyRelative("Guid");
+            var guidProperty = property.FindPropertyRelative("Guid");
             guidProperty.SetGuid(guid);
 
-            SerializedProperty pathProperty = property.FindPropertyRelative("Path");
+            var pathProperty = property.FindPropertyRelative("Path");
             pathProperty.stringValue = path;
         }
 
         public static EventReference GetEventReference(this SerializedProperty property)
         {
-            SerializedProperty pathProperty = property.FindPropertyRelative("Path");
-            SerializedProperty guidProperty = property.FindPropertyRelative("Guid");
+            var pathProperty = property.FindPropertyRelative("Path");
+            var guidProperty = property.FindPropertyRelative("Guid");
 
             return new EventReference() {
                 Path = pathProperty.stringValue,

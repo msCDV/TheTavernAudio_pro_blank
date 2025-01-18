@@ -20,7 +20,7 @@ namespace FMODUnity
             trigger = serializedObject.FindProperty("TriggerEvent");
             tag = serializedObject.FindProperty("CollisionTag");
             targetEmitter = null;
-            for (int i = 0; i < emitters.arraySize; i++)
+            for (var i = 0; i < emitters.arraySize; i++)
             {
                 targetEmitter = emitters.GetArrayElementAtIndex(i).FindPropertyRelative("Target").objectReferenceValue as StudioEventEmitter;
                 if (targetEmitter != null)
@@ -45,7 +45,7 @@ namespace FMODUnity
                     return;
                 }
 
-                List<StudioEventEmitter> newEmitters = new List<StudioEventEmitter>();
+                var newEmitters = new List<StudioEventEmitter>();
                 targetEmitter.GetComponents(newEmitters);
                 expanded = new bool[newEmitters.Count];
                 foreach (var emitter in newEmitters)
@@ -70,11 +70,11 @@ namespace FMODUnity
             var localEmitters = new List<StudioEventEmitter>();
             targetEmitter.GetComponents(localEmitters);
 
-            int emitterIndex = 0;
+            var emitterIndex = 0;
             foreach (var emitter in localEmitters)
             {
                 SerializedProperty emitterProperty = null;
-                for(int i = 0; i < emitters.arraySize; i++)
+                for(var i = 0; i < emitters.arraySize; i++)
                 {
                     if (emitters.GetArrayElementAtIndex(i).FindPropertyRelative("Target").objectReferenceValue == emitter)
                     {
@@ -100,9 +100,9 @@ namespace FMODUnity
 
                         foreach (var paramRef in eventRef.LocalParameters)
                         {
-                            bool set = false;
-                            int index = -1;
-                            for (int i = 0; i < emitterProperty.FindPropertyRelative("Params").arraySize; i++)
+                            var set = false;
+                            var index = -1;
+                            for (var i = 0; i < emitterProperty.FindPropertyRelative("Params").arraySize; i++)
                             {
                                 if (emitterProperty.FindPropertyRelative("Params").GetArrayElementAtIndex(i).FindPropertyRelative("Name").stringValue == paramRef.Name)
                                 {
@@ -113,7 +113,7 @@ namespace FMODUnity
                             }
                             EditorGUILayout.BeginHorizontal();
                             EditorGUILayout.PrefixLabel(paramRef.Name);
-                            bool newSet = GUILayout.Toggle(set, "");
+                            var newSet = GUILayout.Toggle(set, "");
                             if (!set && newSet)
                             {
                                 index = 0;

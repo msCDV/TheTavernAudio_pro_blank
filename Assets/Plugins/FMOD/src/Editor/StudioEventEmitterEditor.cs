@@ -21,12 +21,12 @@ namespace FMODUnity
         {
             var emitter = target as StudioEventEmitter;
 
-            EditorEventRef editorEvent = EventManager.EventFromGUID(emitter.EventReference.Guid);
+            var editorEvent = EventManager.EventFromGUID(emitter.EventReference.Guid);
             if (editorEvent != null && editorEvent.Is3D)
             {
                 EditorGUI.BeginChangeCheck();
-                float minDistance = emitter.OverrideAttenuation ? emitter.OverrideMinDistance : editorEvent.MinDistance;
-                float maxDistance = emitter.OverrideAttenuation ? emitter.OverrideMaxDistance : editorEvent.MaxDistance;
+                var minDistance = emitter.OverrideAttenuation ? emitter.OverrideMinDistance : editorEvent.MinDistance;
+                var maxDistance = emitter.OverrideAttenuation ? emitter.OverrideMaxDistance : editorEvent.MaxDistance;
                 minDistance = Handles.RadiusHandle(Quaternion.identity, emitter.transform.position, minDistance);
                 maxDistance = Handles.RadiusHandle(Quaternion.identity, emitter.transform.position, maxDistance);
                 if (EditorGUI.EndChangeCheck() && emitter.OverrideAttenuation)
@@ -70,7 +70,7 @@ namespace FMODUnity
 
             EditorGUILayout.PropertyField(eventReference, new GUIContent(EventReferenceLabel));
 
-            EditorEventRef editorEvent = EventManager.EventFromPath(eventPath.stringValue);
+            var editorEvent = EventManager.EventFromPath(eventPath.stringValue);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -161,7 +161,7 @@ namespace FMODUnity
             {
                 paramsProperty = serializedObject.FindProperty("Params");
 
-                foreach (UnityEngine.Object target in serializedObject.targetObjects)
+                foreach (var target in serializedObject.targetObjects)
                 {
                     serializedTargets.Add(new SerializedObject(target));
                 }
@@ -172,16 +172,16 @@ namespace FMODUnity
             {
                 propertyRecords.Clear();
 
-                foreach (SerializedObject serializedTarget in serializedTargets)
+                foreach (var serializedTarget in serializedTargets)
                 {
-                    SerializedProperty paramsProperty = serializedTarget.FindProperty("Params");
+                    var paramsProperty = serializedTarget.FindProperty("Params");
 
                     foreach (SerializedProperty parameterProperty in paramsProperty)
                     {
-                        string name = parameterProperty.FindPropertyRelative("Name").stringValue;
-                        SerializedProperty valueProperty = parameterProperty.FindPropertyRelative("Value");
+                        var name = parameterProperty.FindPropertyRelative("Name").stringValue;
+                        var valueProperty = parameterProperty.FindPropertyRelative("Value");
 
-                        PropertyRecord record = propertyRecords.Find(r => r.name == name);
+                        var record = propertyRecords.Find(r => r.name == name);
 
                         if (record != null)
                         {
@@ -189,7 +189,7 @@ namespace FMODUnity
                         }
                         else
                         {
-                            EditorParamRef paramRef = eventRef.LocalParameters.Find(p => p.Name == name);
+                            var paramRef = eventRef.LocalParameters.Find(p => p.Name == name);
 
                             if (paramRef != null)
                             {
@@ -214,14 +214,14 @@ namespace FMODUnity
                 missingParameters.Clear();
                 missingParameters.AddRange(eventRef.LocalParameters.Where(
                     p => {
-                        PropertyRecord record = propertyRecords.Find(r => r.name == p.Name);
+                        var record = propertyRecords.Find(r => r.name == p.Name);
                         return record == null || record.valueProperties.Count < serializedTargets.Count;
                     }));
             }
 
             public void OnGUI(EditorEventRef eventRef, bool matchingEvents)
             {
-                foreach (SerializedObject serializedTarget in serializedTargets)
+                foreach (var serializedTarget in serializedTargets)
                 {
                     serializedTarget.Update();
                 }
@@ -245,7 +245,7 @@ namespace FMODUnity
                     }
                 }
 
-                foreach (SerializedObject serializedTarget in serializedTargets)
+                foreach (var serializedTarget in serializedTargets)
                 {
                     serializedTarget.ApplyModifiedProperties();
                 }
@@ -253,9 +253,9 @@ namespace FMODUnity
 
             private void DrawHeader(bool enableAddButton)
             {
-                Rect controlRect = EditorGUILayout.GetControlRect();
+                var controlRect = EditorGUILayout.GetControlRect();
 
-                Rect titleRect = controlRect;
+                var titleRect = controlRect;
                 titleRect.width = EditorGUIUtility.labelWidth;
 
                 // Let the user revert the whole Params array to prefab by context-clicking the title.
@@ -266,7 +266,7 @@ namespace FMODUnity
 
                 EditorGUI.EndProperty();
 
-                Rect buttonRect = controlRect;
+                var buttonRect = controlRect;
                 buttonRect.xMin = titleRect.xMax;
 
                 EditorGUI.BeginDisabledGroup(!enableAddButton);
@@ -282,10 +282,10 @@ namespace FMODUnity
 
                 if (EditorGUI.DropdownButton(position, new GUIContent("Add"), FocusType.Passive))
                 {
-                    GenericMenu menu = new GenericMenu();
+                    var menu = new GenericMenu();
                     menu.AddItem(new GUIContent("All"), false, () =>
                         {
-                            foreach (EditorParamRef parameter in missingParameters)
+                            foreach (var parameter in missingParameters)
                             {
                                 AddParameter(parameter);
                             }
@@ -293,7 +293,7 @@ namespace FMODUnity
 
                     menu.AddSeparator(string.Empty);
 
-                    foreach (EditorParamRef parameter in missingParameters)
+                    foreach (var parameter in missingParameters)
                     {
                         menu.AddItem(new GUIContent(parameter.Name), false,
                             (userData) =>
@@ -315,7 +315,7 @@ namespace FMODUnity
                 // SerializedProperties that refer to array elements, as this can throw exceptions.
                 string parameterToDelete = null;
 
-                foreach (PropertyRecord record in propertyRecords)
+                foreach (var record in propertyRecords)
                 {
                     if (record.valueProperties.Count == serializedTargets.Count)
                     {
@@ -339,25 +339,25 @@ namespace FMODUnity
             {
                 delete = false;
 
-                GUIContent removeLabel = new GUIContent("Remove");
+                var removeLabel = new GUIContent("Remove");
 
-                Rect position = EditorGUILayout.GetControlRect();
+                var position = EditorGUILayout.GetControlRect();
 
-                Rect nameLabelRect = position;
+                var nameLabelRect = position;
                 nameLabelRect.width = EditorGUIUtility.labelWidth;
 
-                Rect removeButtonRect = position;
+                var removeButtonRect = position;
                 removeButtonRect.width = EditorStyles.miniButton.CalcSize(removeLabel).x;
                 removeButtonRect.x = position.xMax - removeButtonRect.width;
 
-                Rect sliderRect = position;
+                var sliderRect = position;
                 sliderRect.xMin = nameLabelRect.xMax;
                 sliderRect.xMax = removeButtonRect.xMin - EditorStyles.miniButton.margin.left;
 
-                GUIContent nameLabel = new GUIContent(record.name);
+                var nameLabel = new GUIContent(record.name);
 
                 float value = 0;
-                bool mixedValues = false;
+                var mixedValues = false;
 
                 // We use EditorGUI.BeginProperty when there is a single object selected, so
                 // the user can revert the value to prefab by context-clicking the name.
@@ -370,9 +370,9 @@ namespace FMODUnity
                 }
                 else
                 {
-                    bool first = true;
+                    var first = true;
 
-                    foreach (SerializedProperty property in record.valueProperties)
+                    foreach (var property in record.valueProperties)
                     {
                         if (first)
                         {
@@ -395,13 +395,13 @@ namespace FMODUnity
 
                     EditorGUI.showMixedValue = mixedValues;
 
-                    int newValue = EditorGUI.Popup(sliderRect, (int)value, record.paramRef.Labels);
+                    var newValue = EditorGUI.Popup(sliderRect, (int)value, record.paramRef.Labels);
 
                     EditorGUI.showMixedValue = false;
 
                     if (EditorGUI.EndChangeCheck())
                     {
-                        foreach (SerializedProperty property in record.valueProperties)
+                        foreach (var property in record.valueProperties)
                         {
                             property.floatValue = newValue;
                         }
@@ -413,13 +413,13 @@ namespace FMODUnity
 
                     EditorGUI.showMixedValue = mixedValues;
 
-                    int newValue = EditorGUI.IntSlider(sliderRect, (int)value, (int)record.paramRef.Min, (int)record.paramRef.Max);
+                    var newValue = EditorGUI.IntSlider(sliderRect, (int)value, (int)record.paramRef.Min, (int)record.paramRef.Max);
 
                     EditorGUI.showMixedValue = false;
 
                     if (EditorGUI.EndChangeCheck())
                     {
-                        foreach (SerializedProperty property in record.valueProperties)
+                        foreach (var property in record.valueProperties)
                         {
                             property.floatValue = newValue;
                         }
@@ -431,13 +431,13 @@ namespace FMODUnity
 
                     EditorGUI.showMixedValue = mixedValues;
 
-                    float newValue = EditorGUI.Slider(sliderRect, value, record.paramRef.Min, record.paramRef.Max);
+                    var newValue = EditorGUI.Slider(sliderRect, value, record.paramRef.Min, record.paramRef.Max);
 
                     EditorGUI.showMixedValue = false;
 
                     if (EditorGUI.EndChangeCheck())
                     {
-                        foreach (SerializedProperty property in record.valueProperties)
+                        foreach (var property in record.valueProperties)
                         {
                             property.floatValue = newValue;
                         }
@@ -456,11 +456,11 @@ namespace FMODUnity
                     if (mixedValues && Event.current.type == EventType.ContextClick
                         && nameLabelRect.Contains(Event.current.mousePosition))
                     {
-                        GenericMenu menu = new GenericMenu();
+                        var menu = new GenericMenu();
 
-                        foreach (SerializedProperty sourceProperty in record.valueProperties)
+                        foreach (var sourceProperty in record.valueProperties)
                         {
-                            UnityEngine.Object targetObject = sourceProperty.serializedObject.targetObject;
+                            var targetObject = sourceProperty.serializedObject.targetObject;
 
                             menu.AddItem(new GUIContent(string.Format("Set to Value of '{0}'", targetObject.name)), false,
                                 (userData) => CopyValueToAll(userData as SerializedProperty, record.valueProperties),
@@ -476,7 +476,7 @@ namespace FMODUnity
             // Copy the value from the source property to all target properties.
             private void CopyValueToAll(SerializedProperty sourceProperty, List<SerializedProperty> targetProperties)
             {
-                foreach (SerializedProperty targetProperty in targetProperties)
+                foreach (var targetProperty in targetProperties)
                 {
                     if (targetProperty != sourceProperty)
                     {
@@ -489,18 +489,18 @@ namespace FMODUnity
             // Add an initial value for the given parameter to all selected objects that don't have one.
             private void AddParameter(EditorParamRef parameter)
             {
-                foreach (SerializedObject serializedTarget in serializedTargets)
+                foreach (var serializedTarget in serializedTargets)
                 {
-                    StudioEventEmitter emitter = serializedTarget.targetObject as StudioEventEmitter;
+                    var emitter = serializedTarget.targetObject as StudioEventEmitter;
 
                     if (Array.FindIndex(emitter.Params, p => p.Name == parameter.Name) < 0)
                     {
-                        SerializedProperty paramsProperty = serializedTarget.FindProperty("Params");
+                        var paramsProperty = serializedTarget.FindProperty("Params");
 
-                        int index = paramsProperty.arraySize;
+                        var index = paramsProperty.arraySize;
                         paramsProperty.InsertArrayElementAtIndex(index);
 
-                        SerializedProperty arrayElement = paramsProperty.GetArrayElementAtIndex(index);
+                        var arrayElement = paramsProperty.GetArrayElementAtIndex(index);
 
                         arrayElement.FindPropertyRelative("Name").stringValue = parameter.Name;
                         arrayElement.FindPropertyRelative("Value").floatValue = parameter.Default;
@@ -513,9 +513,9 @@ namespace FMODUnity
             // Delete initial parameter values for the given name from all selected objects.
             private void DeleteParameter(string name)
             {
-                foreach (SerializedObject serializedTarget in serializedTargets)
+                foreach (var serializedTarget in serializedTargets)
                 {
-                    SerializedProperty paramsProperty = serializedTarget.FindProperty("Params");
+                    var paramsProperty = serializedTarget.FindProperty("Params");
 
                     foreach (SerializedProperty child in paramsProperty)
                     {

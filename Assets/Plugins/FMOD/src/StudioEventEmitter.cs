@@ -65,7 +65,7 @@ namespace FMODUnity
 
         public static void UpdateActiveEmitters()
         {
-            foreach (StudioEventEmitter emitter in activeEmitters)
+            foreach (var emitter in activeEmitters)
             {
                 emitter.UpdatePlayingStatus();
             }
@@ -87,7 +87,7 @@ namespace FMODUnity
         private void UpdatePlayingStatus(bool force = false)
         {
             // If at least one listener is within the max distance, ensure an event instance is playing
-            bool playInstance = StudioListener.DistanceSquaredToNearestListener(transform.position) <= (MaxDistance * MaxDistance);
+            var playInstance = StudioListener.DistanceSquaredToNearestListener(transform.position) <= (MaxDistance * MaxDistance);
 
             if (force || playInstance != IsPlaying())
             {
@@ -170,7 +170,7 @@ namespace FMODUnity
 
             if (eventDescription.isValid())
             {
-                for (int i = 0; i < Params.Length; i++)
+                for (var i = 0; i < Params.Length; i++)
                 {
                     FMOD.Studio.PARAMETER_DESCRIPTION param;
                     eventDescription.getParameterDescriptionByName(Params[i].Name, out param);
@@ -250,7 +250,7 @@ namespace FMODUnity
 #if UNITY_PHYSICS_EXIST
                     if (GetComponent<Rigidbody>())
                     {
-                        Rigidbody rigidBody = GetComponent<Rigidbody>();
+                        var rigidBody = GetComponent<Rigidbody>();
                         instance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject, rigidBody));
                         RuntimeManager.AttachInstanceToGameObject(instance, transform, rigidBody);
                     }
@@ -323,8 +323,8 @@ namespace FMODUnity
         {
             if (Settings.Instance.StopEventsOutsideMaxDistance && IsActive)
             {
-                string findName = name;
-                ParamRef cachedParam = cachedParams.Find(x => x.Name == findName);
+                var findName = name;
+                var cachedParam = cachedParams.Find(x => x.Name == findName);
 
                 if (cachedParam == null)
                 {
@@ -350,8 +350,8 @@ namespace FMODUnity
         {
             if (Settings.Instance.StopEventsOutsideMaxDistance && IsActive)
             {
-                FMOD.Studio.PARAMETER_ID findId = id;
-                ParamRef cachedParam = cachedParams.Find(x => x.ID.Equals(findId));
+                var findId = id;
+                var cachedParam = cachedParams.Find(x => x.ID.Equals(findId));
 
                 if (cachedParam == null)
                 {

@@ -423,7 +423,7 @@ namespace FMODUnity
 
         internal Platform FindPlatform(string identifier)
         {
-            foreach (Platform platform in Platforms)
+            foreach (var platform in Platforms)
             {
                 if (platform.Identifier == identifier)
                 {
@@ -501,7 +501,7 @@ namespace FMODUnity
 
             if (PlatformForRuntimePlatform.TryGetValue(Application.platform, out platforms))
             {
-                foreach (Platform platform in platforms)
+                foreach (var platform in platforms)
                 {
                     if (platform.MatchesCurrentEnvironment)
                     {
@@ -627,7 +627,7 @@ namespace FMODUnity
                 sourceBankPathUnformatted = RuntimeUtils.GetCommonPlatformPath(sourceBankPathUnformatted);
 
                 // Remove the FMODStudioCache if in the old location
-                string oldCache = "Assets/Plugins/FMOD/Resources/FMODStudioCache.asset";
+                var oldCache = "Assets/Plugins/FMOD/Resources/FMODStudioCache.asset";
                 if (File.Exists(oldCache))
                 {
                     AssetDatabase.DeleteAsset(oldCache);
@@ -654,16 +654,16 @@ namespace FMODUnity
             Platforms.Clear();
 
 #if UNITY_EDITOR
-            string assetPath = AssetDatabase.GetAssetPath(this);
-            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-            Platform[] assetPlatforms = assets.OfType<Platform>().ToArray();
+            var assetPath = AssetDatabase.GetAssetPath(this);
+            var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+            var assetPlatforms = assets.OfType<Platform>().ToArray();
 #else
-            Platform[] assetPlatforms = Resources.LoadAll<Platform>(SettingsAssetName);
+            var assetPlatforms = Resources.LoadAll<Platform>(SettingsAssetName);
 #endif
 
-            foreach (Platform newPlatform in assetPlatforms)
+            foreach (var newPlatform in assetPlatforms)
             {
-                Platform existingPlatform = FindPlatform(newPlatform.Identifier);
+                var existingPlatform = FindPlatform(newPlatform.Identifier);
 
                 if (existingPlatform != null)
                 {
@@ -697,7 +697,7 @@ namespace FMODUnity
 
 #if UNITY_EDITOR
             // Remove any invalid child platforms (ie. deprecated platforms).
-            foreach (Platform newPlatform in assetPlatforms)
+            foreach (var newPlatform in assetPlatforms)
             {
                 if (newPlatform.ChildIdentifiers.RemoveAll(x => FindPlatform(x) == null) > 0)
                 {
@@ -737,18 +737,18 @@ namespace FMODUnity
         {
             const string Il2CppCommand_AdditionalCpp = "--additional-cpp";
 
-            string arguments = PlayerSettings.GetAdditionalIl2CppArgs();
-            string newArguments = arguments;
+            var arguments = PlayerSettings.GetAdditionalIl2CppArgs();
+            var newArguments = arguments;
 
-            foreach (string path in AdditionalIl2CppFiles())
+            foreach (var path in AdditionalIl2CppFiles())
             {
                 // Match on basename only in case the temp file location has moved
-                string basename = Regex.Escape(Path.GetFileName(path));
-                Regex regex = new Regex(Il2CppCommand_AdditionalCpp + "=\"[^\"]*" + basename + "\"");
+                var basename = Regex.Escape(Path.GetFileName(path));
+                var regex = new Regex(Il2CppCommand_AdditionalCpp + "=\"[^\"]*" + basename + "\"");
 
-                for (int startIndex = 0; startIndex < newArguments.Length; )
+                for (var startIndex = 0; startIndex < newArguments.Length; )
                 {
-                    Match match = regex.Match(newArguments, startIndex);
+                    var match = regex.Match(newArguments, startIndex);
 
                     if (!match.Success)
                     {
@@ -757,8 +757,8 @@ namespace FMODUnity
 
                     RuntimeUtils.DebugLogFormat("FMOD: Removing Il2CPP argument '{0}'", match.Value);
 
-                    int matchStart = match.Index;
-                    int matchEnd = match.Index + match.Length;
+                    var matchStart = match.Index;
+                    var matchEnd = match.Index + match.Length;
 
                     // Consume an adjacent space if there is one
                     if (matchStart > 0 && newArguments[matchStart - 1] == ' ')
@@ -793,7 +793,7 @@ namespace FMODUnity
                 RegisterStaticPluginsAssetPathFull,
             };
 
-            foreach (string path in TemporaryFiles)
+            foreach (var path in TemporaryFiles)
             {
                 if (Settings.EditorSettings != null)
                 {
@@ -864,8 +864,8 @@ namespace FMODUnity
         public static void CopySetting<T, U>(List<T> list, Platform fromPlatform, Platform toPlatform)
             where T : PlatformSetting<U>, new()
         {
-            T fromSetting = list.Find((x) => x.Platform == fromPlatform);
-            T toSetting = list.Find((x) => x.Platform == toPlatform);
+            var fromSetting = list.Find((x) => x.Platform == fromPlatform);
+            var toSetting = list.Find((x) => x.Platform == toPlatform);
 
             if (fromSetting != null)
             {

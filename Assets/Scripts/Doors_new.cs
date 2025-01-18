@@ -1,91 +1,82 @@
-using FMODUnity;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Doors_new : MonoBehaviour, IInteractable
+public class DoorsNew : MonoBehaviour, IInteractable
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
-    public float rotationSpeed = 90f; // Degrees per second
-    bool doorsOpened = true;
-    bool isRotating = false;
+    public float rotationSpeed = 90f;
+    private bool _doorsOpened = true;
+    private bool _isRotating;
 
     private void Start()
     {
-        audioSystem = FindObjectOfType<AudioSystem>();
+        _audioSystem = FindObjectOfType<AudioSystem>();
     }
 
     public void Interact()
     {
-        if (!isRotating)
+        if (!_isRotating)
         {
             DoorsInteract();
         }
     }
 
-    IEnumerator CloseOverTime()
+    private IEnumerator CloseOverTime()
     {
-        isRotating = true;
-        float elapsedTime = 0f;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.Euler(0, 65, 0) * startRotation; // Rotating around Y-axis by 90 degrees
+        _isRotating = true;
+        var elapsedTime = 0f;
+        var startRotation = transform.rotation;
+        var targetRotation = Quaternion.Euler(0, 65, 0) * startRotation;
 
-        while (elapsedTime < 1f) // Rotate over 1 second
+        while (elapsedTime < 1f)
         {
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, elapsedTime);
-            elapsedTime += Time.deltaTime * rotationSpeed / 90f; // Normalizing to 90 degrees rotation
+            elapsedTime += Time.deltaTime * rotationSpeed / 90f;
             yield return null;
         }
 
-        // Ensure the rotation is exactly what we want at the end
         transform.rotation = targetRotation;
-        isRotating = false;
+        _isRotating = false;
     }
 
-    IEnumerator OpenOverTime()
+    private IEnumerator OpenOverTime()
     {
-        isRotating = true;
-        float elapsedTime = 0f;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.Euler(0, -65, 0) * startRotation; // Rotating around Y-axis by 90 degrees
+        _isRotating = true;
+        var elapsedTime = 0f;
+        var startRotation = transform.rotation;
+        var targetRotation = Quaternion.Euler(0, -65, 0) * startRotation;
 
-        while (elapsedTime < 1f) // Rotate over 1 second
+        while (elapsedTime < 1f)
         {
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, elapsedTime);
-            elapsedTime += Time.deltaTime * rotationSpeed / 90f; // Normalizing to 90 degrees rotation
+            elapsedTime += Time.deltaTime * rotationSpeed / 90f;
             yield return null;
         }
 
-        // Ensure the rotation is exactly what we want at the end
         transform.rotation = targetRotation;
-        isRotating = false;
+        _isRotating = false;
     }
 
-    void DoorsInteract()
+    private void DoorsInteract()
     {
-        if (doorsOpened == true)
+        if (_doorsOpened)
         {
             StartCoroutine(CloseOverTime());
-            audioSystem.doorsName = gameObject.name;
-            audioSystem.PlayDoorSound();
-            doorsOpened = false;
-            if(audioSystem.roomsAmbientActivated)
-                audioSystem.RoomsSnap();
+            _audioSystem.doorsName = gameObject.name;
+            _audioSystem.PlayDoorSound();
+            _doorsOpened = false;
+            if (_audioSystem.roomsAmbientActivated)
+                _audioSystem.RoomsSnap();
         }
         else
         {
             StartCoroutine(OpenOverTime());
-            audioSystem.doorsName = gameObject.name;
-            audioSystem.PlayDoorSound();
-            doorsOpened = true;
-            if (audioSystem.roomsAmbientActivated)
-                audioSystem.RoomsSnap();
+            _audioSystem.doorsName = gameObject.name;
+            _audioSystem.PlayDoorSound();
+            _doorsOpened = true;
+            if (_audioSystem.roomsAmbientActivated)
+                _audioSystem.RoomsSnap();
         }
     }
 }
-
-
-

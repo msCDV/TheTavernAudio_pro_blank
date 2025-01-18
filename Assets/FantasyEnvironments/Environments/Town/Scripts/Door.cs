@@ -7,19 +7,19 @@ public class Door : MonoBehaviour
 	public Animator anim;
 
 	// Use this for initialization
-	void Start ()
+	private void Start ()
 	{
 		anim = GetComponent<Animator> ();
 	}
 
-	void OnTriggerEnter (Collider other)
+	private void OnTriggerEnter (Collider other)
 	{
 		Debug.Log("entered");
 		anim.SetBool ("DoorOpen", true);
 		anim.SetBool ("DoorClose", false);
 	}
 
-	void OnTriggerExit (Collider other)
+	private void OnTriggerExit (Collider other)
 	{
 		anim.SetBool ("DoorOpen", false);
 		anim.SetBool ("DoorClose", true);

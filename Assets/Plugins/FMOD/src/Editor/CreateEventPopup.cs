@@ -74,8 +74,8 @@ namespace FMODUnity
                     return output;
                 }";
 
-            string bankList = EditorUtils.GetScriptOutput(string.Format("({0})()", buildBankTreeFunc));
-            string[] bankListSplit = bankList.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var bankList = EditorUtils.GetScriptOutput(string.Format("({0})()", buildBankTreeFunc));
+            var bankListSplit = bankList.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var bank in bankListSplit)
             {
                 var entry = new BankEntry();
@@ -91,24 +91,24 @@ namespace FMODUnity
             EditorUtils.GetScriptOutput(string.Format("cur = studio.project.lookup(\"{0}\");", entry.guid));
 
             // get child count
-            string itemCountString = EditorUtils.GetScriptOutput("cur.items.length;");
+            var itemCountString = EditorUtils.GetScriptOutput("cur.items.length;");
             int itemCount;
             Int32.TryParse(itemCountString, out itemCount);
 
             // iterate children looking for folder
-            for (int item = 0; item < itemCount; item++)
+            for (var item = 0; item < itemCount; item++)
             {
                 EditorUtils.GetScriptOutput(String.Format("child = cur.items[{0}]", item));
 
                 // check if it's a folder
-                string isFolder = EditorUtils.GetScriptOutput("child.isOfExactType(\"EventFolder\")");
+                var isFolder = EditorUtils.GetScriptOutput("child.isOfExactType(\"EventFolder\")");
                 if (isFolder == "false")
                 {
                     continue;
                 }
 
                 // Get guid and name
-                string info = EditorUtils.GetScriptOutput("child.id + child.name");
+                var info = EditorUtils.GetScriptOutput("child.id + child.name");
 
                 var childEntry = new FolderEntry();
                 childEntry.guid = info.Substring(0, 38);
@@ -200,7 +200,7 @@ namespace FMODUnity
                 }
             }
 
-            bool disabled = eventName.Length == 0;
+            var disabled = eventName.Length == 0;
             EditorGUI.BeginDisabledGroup(disabled);
             if (GUILayout.Button("Create Event"))
             {
@@ -221,7 +221,7 @@ namespace FMODUnity
                 selectedBank = EditorGUILayout.Popup(selectedBank, banks.Select(x => x.name).ToArray());
             }
 
-            bool updateEventPath = false;
+            var updateEventPath = false;
             {
                 GUI.SetNextControlName("folder");
                 EditorGUI.BeginChangeCheck();
@@ -246,22 +246,22 @@ namespace FMODUnity
 
             // Draw the current folder as a title bar, click to go back one level
             {
-                Rect currentRect = EditorGUILayout.GetControlRect();
+                var currentRect = EditorGUILayout.GetControlRect();
 
                 var bg = new GUIStyle(GUI.skin.box);
-                Rect bgRect = new Rect(currentRect);
+                var bgRect = new Rect(currentRect);
                 bgRect.x = 2;
                 bgRect.width = position.width-4;
                 GUI.Box(bgRect, GUIContent.none, bg);
 
-                Rect textureRect = currentRect;
+                var textureRect = currentRect;
                 textureRect.width = arrowIcon.width;
                 if (currentFolder.name != null)
                 {
                     GUI.DrawTextureWithTexCoords(textureRect, arrowIcon, new Rect(1, 1, -1, -1));
                 }
 
-                Rect labelRect = currentRect;
+                var labelRect = currentRect;
                 labelRect.x += arrowIcon.width;
                 labelRect.width -= arrowIcon.width;
                 GUI.Label(labelRect, currentFolder.name != null ? currentFolder.name : "Folders", EditorStyles.boldLabel);
@@ -281,7 +281,7 @@ namespace FMODUnity
 
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, false, false);
 
-            for (int i = 0; i < filteredEntries.Count; i++)
+            for (var i = 0; i < filteredEntries.Count; i++)
             {
                 var entry = filteredEntries[i];
                 var content = new GUIContent(entry.name);
@@ -301,7 +301,7 @@ namespace FMODUnity
                     GUI.Label(rect, content, normal);
                 }
 
-                Rect textureRect = rect;
+                var textureRect = rect;
                 textureRect.x = textureRect.width - arrowIcon.width;
                 textureRect.width = arrowIcon.width;
                 GUI.DrawTexture(textureRect, arrowIcon);
@@ -339,7 +339,7 @@ namespace FMODUnity
 
         private void CreateEventInStudio()
         {
-            string eventGuid = EditorUtils.CreateStudioEvent(eventFolder, eventName);
+            var eventGuid = EditorUtils.CreateStudioEvent(eventFolder, eventName);
 
             if (!string.IsNullOrEmpty(eventGuid))
             {
@@ -351,7 +351,7 @@ namespace FMODUnity
                     eventFolder += "/";
                 }
 
-                string fullPath = "event:" + eventFolder + eventName;
+                var fullPath = "event:" + eventFolder + eventName;
                 outputProperty.SetEventReference(FMOD.GUID.Parse(eventGuid), fullPath);
                 EditorUtils.UpdateParamsOnEmitter(outputProperty.serializedObject, fullPath);
                 outputProperty.serializedObject.ApplyModifiedProperties();
@@ -360,11 +360,11 @@ namespace FMODUnity
 
         private void UpdateListFromText()
         {
-            int endFolders = eventFolder.LastIndexOf("/");
+            var endFolders = eventFolder.LastIndexOf("/");
             currentFilter = eventFolder.Substring(endFolders + 1);
 
             var folders = eventFolder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            FolderEntry entry = rootFolder;
+            var entry = rootFolder;
             int i;
             for (i = 0; i < folders.Length; i++)
             {
@@ -386,7 +386,7 @@ namespace FMODUnity
 
         private void UpdateTextFromList()
         {
-            string path = "";
+            var path = "";
             var entry = currentFolder;
             while (entry.parent != null)
             {

@@ -30,10 +30,10 @@ namespace FMODUnity
 
         public static string CalculateName(string filePath, string basePath)
         {
-            string relativePath = filePath.Substring(basePath.Length + 1);
-            string extension = System.IO.Path.GetExtension(relativePath);
+            var relativePath = filePath.Substring(basePath.Length + 1);
+            var extension = System.IO.Path.GetExtension(relativePath);
 
-            string name = relativePath.Substring(0, relativePath.Length - extension.Length);
+            var name = relativePath.Substring(0, relativePath.Length - extension.Length);
             name = RuntimeUtils.GetCommonPlatformPath(name);
 
             return name;

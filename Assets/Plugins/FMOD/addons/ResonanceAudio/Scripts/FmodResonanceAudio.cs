@@ -87,10 +87,10 @@ namespace FMODUnityResonance
             // Update the current room effects to be applied.
             if (enabledRooms.Count > 0)
             {
-                FmodResonanceAudioRoom currentRoom = enabledRooms[enabledRooms.Count - 1];
-                RoomProperties roomProperties = GetRoomProperties(currentRoom);
+                var currentRoom = enabledRooms[enabledRooms.Count - 1];
+                var roomProperties = GetRoomProperties(currentRoom);
                 // Pass the room properties into a pointer.
-                IntPtr roomPropertiesPtr = Marshal.AllocHGlobal(roomPropertiesSize);
+                var roomPropertiesPtr = Marshal.AllocHGlobal(roomPropertiesSize);
                 Marshal.StructureToPtr(roomProperties, roomPropertiesPtr, false);
                 ListenerPlugin.setParameterData(roomPropertiesIndex, GetBytes(roomPropertiesPtr,
                                                                                roomPropertiesSize));
@@ -110,10 +110,10 @@ namespace FMODUnityResonance
             FMOD.VECTOR unused;
             RuntimeManager.CoreSystem.get3DListenerAttributes(0, out listenerPositionFmod, out unused,
                                                                   out unused, out unused);
-            Vector3 listenerPosition = new Vector3(listenerPositionFmod.x, listenerPositionFmod.y,
+            var listenerPosition = new Vector3(listenerPositionFmod.x, listenerPositionFmod.y,
                                                    listenerPositionFmod.z);
-            Vector3 relativePosition = listenerPosition - room.transform.position;
-            Quaternion rotationInverse = Quaternion.Inverse(room.transform.rotation);
+            var relativePosition = listenerPosition - room.transform.position;
+            var rotationInverse = Quaternion.Inverse(room.transform.rotation);
             // Set the size of the room as the boundary and return whether the listener is inside.
             bounds.size = Vector3.Scale(room.transform.lossyScale, room.Size);
             return bounds.Contains(rotationInverse * relativePosition);
@@ -186,7 +186,7 @@ namespace FMODUnityResonance
           ref Quaternion rotation)
         {
             // Compose the transformation matrix.
-            Matrix4x4 transformMatrix = Matrix4x4.TRS(position, rotation, Vector3.one);
+            var transformMatrix = Matrix4x4.TRS(position, rotation, Vector3.one);
             // Convert the transformation matrix from left-handed to right-handed.
             transformMatrix = flipZ * transformMatrix * flipZ;
             // Update |position| and |rotation| respectively.
@@ -199,7 +199,7 @@ namespace FMODUnityResonance
         {
             if (ptr != IntPtr.Zero)
             {
-                byte[] byteArray = new byte[length];
+                var byteArray = new byte[length];
                 Marshal.Copy(ptr, byteArray, 0, length);
                 return byteArray;
             }
@@ -211,9 +211,9 @@ namespace FMODUnityResonance
         private static RoomProperties GetRoomProperties(FmodResonanceAudioRoom room)
         {
             RoomProperties roomProperties;
-            Vector3 position = room.transform.position;
-            Quaternion rotation = room.transform.rotation;
-            Vector3 scale = Vector3.Scale(room.transform.lossyScale, room.Size);
+            var position = room.transform.position;
+            var rotation = room.transform.rotation;
+            var scale = Vector3.Scale(room.transform.lossyScale, room.Size);
             ConvertAudioTransformFromUnity(ref position, ref rotation);
             roomProperties.PositionX = position.x;
             roomProperties.PositionY = position.y;
@@ -242,18 +242,18 @@ namespace FMODUnityResonance
         private static FMOD.DSP Initialize()
         {
             // Search through all busses on in banks.
-            int numBanks = 0;
-            FMOD.DSP dsp = new FMOD.DSP();
+            var numBanks = 0;
+            var dsp = new FMOD.DSP();
             FMOD.Studio.Bank[] banks = null;
             RuntimeManager.StudioSystem.getBankCount(out numBanks);
             RuntimeManager.StudioSystem.getBankList(out banks);
-            for (int currentBank = 0; currentBank < numBanks; ++currentBank)
+            for (var currentBank = 0; currentBank < numBanks; ++currentBank)
             {
-                int numBusses = 0;
+                var numBusses = 0;
                 FMOD.Studio.Bus[] busses = null;
                 banks[currentBank].getBusCount(out numBusses);
                 banks[currentBank].getBusList(out busses);
-                for (int currentBus = 0; currentBus < numBusses; ++currentBus)
+                for (var currentBus = 0; currentBus < numBusses; ++currentBus)
                 {
                     // Make sure the channel group of the current bus is assigned properly.
                     string busPath = null;
@@ -265,13 +265,13 @@ namespace FMODUnityResonance
                     busses[currentBus].getChannelGroup(out channelGroup);
                     if (channelGroup.hasHandle())
                     {
-                        int numDsps = 0;
+                        var numDsps = 0;
                         channelGroup.getNumDSPs(out numDsps);
-                        for (int currentDsp = 0; currentDsp < numDsps; ++currentDsp)
+                        for (var currentDsp = 0; currentDsp < numDsps; ++currentDsp)
                         {
                             channelGroup.getDSP(currentDsp, out dsp);
                             string dspNameSb;
-                            int unusedInt = 0;
+                            var unusedInt = 0;
                             uint unusedUint = 0;
                             dsp.getInfo(out dspNameSb, out unusedUint, out unusedInt, out unusedInt, out unusedInt);
                             if (dspNameSb.ToString().Equals(listenerPluginName) && dsp.hasHandle())

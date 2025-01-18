@@ -49,7 +49,7 @@ namespace FMODUnity
 
         private static void UpdateFileWatcherPath()
         {
-            string sourceBankPath = Settings.Instance.SourceBankPath;
+            var sourceBankPath = Settings.Instance.SourceBankPath;
 
             string pathToWatch;
 
@@ -131,7 +131,7 @@ namespace FMODUnity
 
         private static bool IsWindowEnabled()
         {
-            Settings settings = Settings.Instance;
+            var settings = Settings.Instance;
 
             return settings.BankRefreshCooldown == Settings.BankRefreshPrompt
                 || (settings.BankRefreshCooldown >= 0 && settings.ShowBankRefreshWindow);
@@ -159,7 +159,7 @@ namespace FMODUnity
             }
             else
             {
-                float nextRefreshTime = lastSourceFileChange + Settings.Instance.BankRefreshCooldown;
+                var nextRefreshTime = lastSourceFileChange + Settings.Instance.BankRefreshCooldown;
                 return Mathf.Max(0, nextRefreshTime - Time.realtimeSinceStartup);
             }
         }

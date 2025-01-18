@@ -12,7 +12,7 @@ namespace FMOD
     {
         public GUID(Guid guid)
         {
-            byte[] bytes = guid.ToByteArray();
+            var bytes = guid.ToByteArray();
 
             Data1 = BitConverter.ToInt32(bytes,  0);
             Data2 = BitConverter.ToInt32(bytes,  4);
@@ -355,7 +355,7 @@ namespace FMODUnity
 
         public static FMOD.ATTRIBUTES_3D To3DAttributes(this Vector3 pos)
         {
-            FMOD.ATTRIBUTES_3D attributes = new FMOD.ATTRIBUTES_3D();
+            var attributes = new FMOD.ATTRIBUTES_3D();
             attributes.forward = ToFMODVector(Vector3.forward);
             attributes.up = ToFMODVector(Vector3.up);
             attributes.position = ToFMODVector(pos);
@@ -365,7 +365,7 @@ namespace FMODUnity
 
         public static FMOD.ATTRIBUTES_3D To3DAttributes(this Transform transform)
         {
-            FMOD.ATTRIBUTES_3D attributes = new FMOD.ATTRIBUTES_3D();
+            var attributes = new FMOD.ATTRIBUTES_3D();
             attributes.forward = transform.forward.ToFMODVector();
             attributes.up = transform.up.ToFMODVector();
             attributes.position = transform.position.ToFMODVector();
@@ -375,7 +375,7 @@ namespace FMODUnity
 
         public static FMOD.ATTRIBUTES_3D To3DAttributes(this Transform transform, Vector3 velocity)
         {
-            FMOD.ATTRIBUTES_3D attributes = new FMOD.ATTRIBUTES_3D();
+            var attributes = new FMOD.ATTRIBUTES_3D();
             attributes.forward = transform.forward.ToFMODVector();
             attributes.up = transform.up.ToFMODVector();
             attributes.position = transform.position.ToFMODVector();
@@ -392,7 +392,7 @@ namespace FMODUnity
 #if UNITY_PHYSICS_EXIST
         public static FMOD.ATTRIBUTES_3D To3DAttributes(Transform transform, Rigidbody rigidbody = null)
         {
-            FMOD.ATTRIBUTES_3D attributes = transform.To3DAttributes();
+            var attributes = transform.To3DAttributes();
 
             if (rigidbody)
             {
@@ -404,7 +404,7 @@ namespace FMODUnity
 
         public static FMOD.ATTRIBUTES_3D To3DAttributes(GameObject go, Rigidbody rigidbody)
         {
-            FMOD.ATTRIBUTES_3D attributes = go.transform.To3DAttributes();
+            var attributes = go.transform.To3DAttributes();
 
             if (rigidbody)
             {
@@ -418,7 +418,7 @@ namespace FMODUnity
 #if UNITY_PHYSICS2D_EXIST
         public static FMOD.ATTRIBUTES_3D To3DAttributes(Transform transform, Rigidbody2D rigidbody)
         {
-            FMOD.ATTRIBUTES_3D attributes = transform.To3DAttributes();
+            var attributes = transform.To3DAttributes();
 
             if (rigidbody)
             {
@@ -435,7 +435,7 @@ namespace FMODUnity
 
         public static FMOD.ATTRIBUTES_3D To3DAttributes(GameObject go, Rigidbody2D rigidbody)
         {
-            FMOD.ATTRIBUTES_3D attributes = go.transform.To3DAttributes();
+            var attributes = go.transform.To3DAttributes();
 
             if (rigidbody)
             {
@@ -492,7 +492,7 @@ namespace FMODUnity
 
         public static FMOD.THREAD_AFFINITY ToFMODThreadAffinity(ThreadAffinity affinity)
         {
-            FMOD.THREAD_AFFINITY fmodAffinity = FMOD.THREAD_AFFINITY.CORE_ALL;
+            var fmodAffinity = FMOD.THREAD_AFFINITY.CORE_ALL;
 
             SetFMODAffinityBit(affinity, ThreadAffinity.Core0, FMOD.THREAD_AFFINITY.CORE_0, ref fmodAffinity);
             SetFMODAffinityBit(affinity, ThreadAffinity.Core1, FMOD.THREAD_AFFINITY.CORE_1, ref fmodAffinity);

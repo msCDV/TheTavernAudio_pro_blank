@@ -76,7 +76,7 @@ namespace FMODUnity
 
         static RuntimeManager()
         {
-            UTF8Encoding encoding = new UTF8Encoding();
+            var encoding = new UTF8Encoding();
 
             masterBusPrefix = encoding.GetBytes("bus:/, ");
             eventSet3DAttributes = encoding.GetBytes("EventInstance::set3DAttributes");
@@ -95,9 +95,9 @@ namespace FMODUnity
         [AOT.MonoPInvokeCallback(typeof(FMOD.DEBUG_CALLBACK))]
         private static FMOD.RESULT DEBUG_CALLBACK(FMOD.DEBUG_FLAGS flags, IntPtr filePtr, int line, IntPtr funcPtr, IntPtr messagePtr)
         {
-            FMOD.StringWrapper file = new FMOD.StringWrapper(filePtr);
-            FMOD.StringWrapper func = new FMOD.StringWrapper(funcPtr);
-            FMOD.StringWrapper message = new FMOD.StringWrapper(messagePtr);
+            var file = new FMOD.StringWrapper(filePtr);
+            var func = new FMOD.StringWrapper(funcPtr);
+            var message = new FMOD.StringWrapper(messagePtr);
 
             if (flags == FMOD.DEBUG_FLAGS.ERROR)
             {
@@ -117,7 +117,7 @@ namespace FMODUnity
         [AOT.MonoPInvokeCallback(typeof(FMOD.SYSTEM_CALLBACK))]
         private static FMOD.RESULT ERROR_CALLBACK(IntPtr system, FMOD.SYSTEM_CALLBACK_TYPE type, IntPtr commanddata1, IntPtr commanddata2, IntPtr userdata)
         {
-            FMOD.ERRORCALLBACK_INFO callbackInfo = (FMOD.ERRORCALLBACK_INFO)FMOD.MarshalHelper.PtrToStructure(commanddata1, typeof(FMOD.ERRORCALLBACK_INFO));
+            var callbackInfo = (FMOD.ERRORCALLBACK_INFO)FMOD.MarshalHelper.PtrToStructure(commanddata1, typeof(FMOD.ERRORCALLBACK_INFO));
 
             // Filter out benign expected errors.
             if ((callbackInfo.instancetype == FMOD.ERRORCALLBACK_INSTANCETYPE.CHANNEL || callbackInfo.instancetype == FMOD.ERRORCALLBACK_INSTANCETYPE.CHANNELCONTROL)
@@ -162,10 +162,10 @@ namespace FMODUnity
                         return null;
                     }
 
-                    FMOD.RESULT initResult = FMOD.RESULT.OK; // Initialize can return an error code if it falls back to NO_SOUND, throw it as a non-cached exception
+                    var initResult = FMOD.RESULT.OK; // Initialize can return an error code if it falls back to NO_SOUND, throw it as a non-cached exception
 
                     // When reloading scripts the static instance pointer will be cleared, find the old manager and clean it up
-                    foreach (RuntimeManager manager in Resources.FindObjectsOfTypeAll<RuntimeManager>())
+                    foreach (var manager in Resources.FindObjectsOfTypeAll<RuntimeManager>())
                     {
                         DestroyImmediate(manager.gameObject);
                     }
@@ -275,20 +275,20 @@ namespace FMODUnity
             AppDomain.CurrentDomain.DomainUnload += HandleDomainUnload;
             #endif // UNITY_EDITOR
 
-            FMOD.RESULT result = FMOD.RESULT.OK;
-            FMOD.RESULT initResult = FMOD.RESULT.OK;
-            Settings fmodSettings = Settings.Instance;
+            var result = FMOD.RESULT.OK;
+            var initResult = FMOD.RESULT.OK;
+            var fmodSettings = Settings.Instance;
             currentPlatform = fmodSettings.FindCurrentPlatform();
 
-            int sampleRate = currentPlatform.SampleRate;
-            int realChannels = Math.Min(currentPlatform.RealChannelCount, 256);
-            int virtualChannels = currentPlatform.VirtualChannelCount;
-            uint dspBufferLength = (uint)currentPlatform.DSPBufferLength;
-            int dspBufferCount = currentPlatform.DSPBufferCount;
-            FMOD.SPEAKERMODE speakerMode = currentPlatform.SpeakerMode;
-            FMOD.OUTPUTTYPE outputType = currentPlatform.GetOutputType();
+            var sampleRate = currentPlatform.SampleRate;
+            var realChannels = Math.Min(currentPlatform.RealChannelCount, 256);
+            var virtualChannels = currentPlatform.VirtualChannelCount;
+            var dspBufferLength = (uint)currentPlatform.DSPBufferLength;
+            var dspBufferCount = currentPlatform.DSPBufferCount;
+            var speakerMode = currentPlatform.SpeakerMode;
+            var outputType = currentPlatform.GetOutputType();
 
-            FMOD.ADVANCEDSETTINGS advancedSettings = new FMOD.ADVANCEDSETTINGS();
+            var advancedSettings = new FMOD.ADVANCEDSETTINGS();
             advancedSettings.randomSeed = (uint)DateTime.UtcNow.Ticks;
             advancedSettings.maxAT9Codecs = GetChannelCountForFormat(CodecType.AT9);
             advancedSettings.maxFADPCMCodecs = GetChannelCountForFormat(CodecType.FADPCM);
@@ -313,7 +313,7 @@ namespace FMODUnity
             }
             #endif
 
-            FMOD.Studio.INITFLAGS studioInitFlags = FMOD.Studio.INITFLAGS.NORMAL | FMOD.Studio.INITFLAGS.DEFERRED_CALLBACKS;
+            var studioInitFlags = FMOD.Studio.INITFLAGS.NORMAL | FMOD.Studio.INITFLAGS.DEFERRED_CALLBACKS;
             if (currentPlatform.IsLiveUpdateEnabled)
             {
                 studioInitFlags |= FMOD.Studio.INITFLAGS.LIVEUPDATE;
@@ -354,7 +354,7 @@ retry:
 
             if (!string.IsNullOrEmpty(fmodSettings.EncryptionKey))
             {
-                FMOD.Studio.ADVANCEDSETTINGS studioAdvancedSettings = new FMOD.Studio.ADVANCEDSETTINGS();
+                var studioAdvancedSettings = new FMOD.Studio.ADVANCEDSETTINGS();
                 result = studioSystem.setAdvancedSettings(studioAdvancedSettings, Settings.Instance.EncryptionKey);
                 CheckInitResult(result, "FMOD.Studio.System.setAdvancedSettings");
             }
@@ -366,7 +366,7 @@ retry:
 
             currentPlatform.PreInitialize(studioSystem);
 
-            PlatformCallbackHandler callbackHandler = currentPlatform.CallbackHandler;
+            var callbackHandler = currentPlatform.CallbackHandler;
 
             if (callbackHandler != null)
             {
@@ -418,19 +418,19 @@ retry:
 
         private int GetChannelCountForFormat(CodecType format)
         {
-            CodecChannelCount channelCount = currentPlatform.CodecChannels.Find(x => x.format == format);
+            var channelCount = currentPlatform.CodecChannels.Find(x => x.format == format);
 
             return channelCount == null ? 0 : Math.Min(channelCount.channels, 256);
         }
 
         private static void SetThreadAffinities(Platform platform)
         {
-            foreach (ThreadAffinityGroup group in platform.ThreadAffinities)
+            foreach (var group in platform.ThreadAffinities)
             {
-                foreach (ThreadType thread in group.threads)
+                foreach (var thread in group.threads)
                 {
-                    FMOD.THREAD_TYPE fmodThread = RuntimeUtils.ToFMODThreadType(thread);
-                    FMOD.THREAD_AFFINITY fmodAffinity = RuntimeUtils.ToFMODThreadAffinity(group.affinity);
+                    var fmodThread = RuntimeUtils.ToFMODThreadType(thread);
+                    var fmodAffinity = RuntimeUtils.ToFMODThreadAffinity(group.affinity);
 
                     FMOD.Thread.SetAttributes(fmodThread, fmodAffinity);
                 }
@@ -463,9 +463,9 @@ retry:
 
                 StudioEventEmitter.UpdateActiveEmitters();
 
-                for (int i = 0; i < attachedInstances.Count; i++)
+                for (var i = 0; i < attachedInstances.Count; i++)
                 {
-                    FMOD.Studio.PLAYBACK_STATE playbackState = FMOD.Studio.PLAYBACK_STATE.STOPPED;
+                    var playbackState = FMOD.Studio.PLAYBACK_STATE.STOPPED;
                     if (attachedInstances[i].instance.isValid())
                     {
                         attachedInstances[i].instance.getPlaybackState(out playbackState);
@@ -518,7 +518,7 @@ retry:
                 #if UNITY_EDITOR
                 ApplyMuteState();
 
-                for (int i = eventPositionWarnings.Count - 1; i >= 0; i--)
+                for (var i = eventPositionWarnings.Count - 1; i >= 0; i--)
                 {
                     if (eventPositionWarnings[i].isValid())
                     {
@@ -567,7 +567,7 @@ retry:
 
         private static AttachedInstance FindOrAddAttachedInstance(FMOD.Studio.EventInstance instance, Transform transform, FMOD.ATTRIBUTES_3D attributes)
         {
-            AttachedInstance attachedInstance = Instance.attachedInstances.Find(x => x.instance.handle == instance.handle);
+            var attachedInstance = Instance.attachedInstances.Find(x => x.instance.handle == instance.handle);
             if (attachedInstance == null)
             {
                 attachedInstance = new AttachedInstance();
@@ -581,7 +581,7 @@ retry:
 
         public static void AttachInstanceToGameObject(FMOD.Studio.EventInstance instance, Transform transform, bool allowNonRigidBodyDoppler = false)
         {
-            AttachedInstance attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform));
+            var attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform));
 
             if (allowNonRigidBodyDoppler)
             {
@@ -593,7 +593,7 @@ retry:
 #if UNITY_PHYSICS_EXIST
         public static void AttachInstanceToGameObject(FMOD.Studio.EventInstance instance, Transform transform, Rigidbody rigidBody)
         {
-            AttachedInstance attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform, rigidBody));
+            var attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform, rigidBody));
 
             attachedInstance.rigidBody = rigidBody;
         }
@@ -602,7 +602,7 @@ retry:
 #if UNITY_PHYSICS2D_EXIST
         public static void AttachInstanceToGameObject(FMOD.Studio.EventInstance instance, Transform transform, Rigidbody2D rigidBody2D)
         {
-            AttachedInstance attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform, rigidBody2D));
+            var attachedInstance = FindOrAddAttachedInstance(instance, transform, RuntimeUtils.To3DAttributes(transform, rigidBody2D));
 
             attachedInstance.rigidBody2D = rigidBody2D;
         }
@@ -611,7 +611,7 @@ retry:
         public static void DetachInstanceFromGameObject(FMOD.Studio.EventInstance instance)
         {
             var manager = Instance;
-            for (int i = 0; i < manager.attachedInstances.Count; i++)
+            for (var i = 0; i < manager.attachedInstances.Count; i++)
             {
                 if (manager.attachedInstances[i].instance.handle == instance.handle)
                 {
@@ -626,7 +626,7 @@ retry:
         {
             if (currentPlatform.OverlayRect != ScreenPosition.VR)
             {
-                GUIStyle debugStyle = GUI.skin.GetStyle("window");
+                var debugStyle = GUI.skin.GetStyle("window");
                 debugStyle.fontSize = currentPlatform.OverlayFontSize;
                 if (studioSystem.isValid() && isOverlayEnabled)
                 {
@@ -670,7 +670,7 @@ retry:
                         mixerHead.setMeteringEnabled(false, true);
                     }
 
-                    StringBuilder debug = new StringBuilder();
+                    var debug = new StringBuilder();
 
                     FMOD.Studio.CPU_USAGE cpuUsage;
                     FMOD.CPU_USAGE cpuUsage_core;
@@ -688,13 +688,13 @@ retry:
                     FMOD.DSP_METERING_INFO outputMetering;
                     mixerHead.getMeteringInfo(IntPtr.Zero, out outputMetering);
                     float rms = 0;
-                    for (int i = 0; i < outputMetering.numchannels; i++)
+                    for (var i = 0; i < outputMetering.numchannels; i++)
                     {
                         rms += outputMetering.rmslevel[i] * outputMetering.rmslevel[i];
                     }
                     rms = Mathf.Sqrt(rms / (float)outputMetering.numchannels);
 
-                    float db = rms > 0 ? 20.0f * Mathf.Log10(rms * Mathf.Sqrt(2.0f)) : -80.0f;
+                    var db = rms > 0 ? 20.0f * Mathf.Log10(rms * Mathf.Sqrt(2.0f)) : -80.0f;
                     if (db > 10.0f) db = 10.0f;
 
                     debug.AppendFormat("VOLUME: RMS = {0:f2}db\n", db);
@@ -708,7 +708,7 @@ retry:
         {
             UpdateDebugText();
 
-            GUIStyle debugStyle = GUI.skin.GetStyle("label");
+            var debugStyle = GUI.skin.GetStyle("label");
 
             debugStyle.fontSize = currentPlatform.OverlayFontSize;
             float width = currentPlatform.OverlayFontSize * 20;
@@ -800,7 +800,7 @@ retry:
 
         private static void ReferenceLoadedBank(string bankName, bool loadSamples)
         {
-            LoadedBank loadedBank = Instance.loadedBanks[bankName];
+            var loadedBank = Instance.loadedBanks[bankName];
             loadedBank.RefCount++;
 
             if (loadSamples)
@@ -840,7 +840,7 @@ retry:
         {
             if (sampleLoadRequests.Count > 0)
             {
-                foreach (string bankName in sampleLoadRequests)
+                foreach (var bankName in sampleLoadRequests)
                 {
                     if (!loadedBanks.ContainsKey(bankName))
                     {
@@ -850,9 +850,9 @@ retry:
                 }
 
                 // All requested banks are loaded, so we can now load sample data
-                foreach (string bankName in sampleLoadRequests)
+                foreach (var bankName in sampleLoadRequests)
                 {
-                    LoadedBank loadedBank = loadedBanks[bankName];
+                    var loadedBank = loadedBanks[bankName];
                     CheckInitResult(loadedBank.Bank.loadSampleData(),
                         string.Format("Loading sample data for bank: {0}", bankName));
                 }
@@ -897,7 +897,7 @@ retry:
             }
             else
             {
-                string bankFolder = Instance.currentPlatform.GetBankFolder();
+                var bankFolder = Instance.currentPlatform.GetBankFolder();
 
 #if !UNITY_EDITOR
                 if (!string.IsNullOrEmpty(Settings.Instance.TargetSubFolder))
@@ -933,8 +933,8 @@ retry:
                 else
 #endif // (UNITY_ANDROID || UNITY_WEBGL) && !UNITY_EDITOR
                 {
-                    LoadedBank loadedBank = new LoadedBank();
-                    FMOD.RESULT loadResult = Instance.studioSystem.loadBankFile(bankPath, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out loadedBank.Bank);
+                    var loadedBank = new LoadedBank();
+                    var loadResult = Instance.studioSystem.loadBankFile(bankPath, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out loadedBank.Bank);
                     Instance.RegisterLoadedBank(loadedBank, bankPath, bankId, loadSamples, loadResult);
                     Instance.loadingBanksRef--;
                 }
@@ -958,14 +958,14 @@ retry:
 #if UNITY_EDITOR
                 if (asset.text.StartsWith(BankStubPrefix))
                 {
-                    string name = asset.text.Substring(BankStubPrefix.Length);
+                    var name = asset.text.Substring(BankStubPrefix.Length);
                     LoadBank(name, loadSamples, bankId);
                     return;
                 }
 #endif
 
-                LoadedBank loadedBank = new LoadedBank();
-                FMOD.RESULT loadResult = Instance.studioSystem.loadBankMemory(asset.bytes, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out loadedBank.Bank);
+                var loadedBank = new LoadedBank();
+                var loadResult = Instance.studioSystem.loadBankMemory(asset.bytes, FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out loadedBank.Bank);
                 Instance.RegisterLoadedBank(loadedBank, bankId, bankId, loadSamples, loadResult);
             }
         }
@@ -1016,7 +1016,7 @@ retry:
 
                 try
                 {
-                    foreach (string bankName in BanksToLoad(fmodSettings))
+                    foreach (var bankName in BanksToLoad(fmodSettings))
                     {
                         LoadBank(bankName);
                     }
@@ -1035,7 +1035,7 @@ retry:
             switch (fmodSettings.BankLoadType)
             {
                 case BankLoadType.All:
-                    foreach (string masterBankFileName in fmodSettings.MasterBanks)
+                    foreach (var masterBankFileName in fmodSettings.MasterBanks)
                     {
                         yield return masterBankFileName + ".strings";
                         yield return masterBankFileName;
@@ -1099,8 +1099,8 @@ retry:
 
         public static bool AnySampleDataLoading()
         {
-            bool loading = false;
-            foreach (LoadedBank bank in Instance.loadedBanks.Values)
+            var loading = false;
+            foreach (var bank in Instance.loadedBanks.Values)
             {
                 FMOD.Studio.LOADING_STATE loadingState;
                 bank.Bank.getSampleLoadingState(out loadingState);
@@ -1185,12 +1185,12 @@ retry:
 
         public static FMOD.Studio.EventInstance CreateInstance(FMOD.GUID guid)
         {
-            FMOD.Studio.EventDescription eventDesc = GetEventDescription(guid);
+            var eventDesc = GetEventDescription(guid);
             FMOD.Studio.EventInstance newInstance;
             eventDesc.createInstance(out newInstance);
 
             #if UNITY_EDITOR
-            bool is3D = false;
+            var is3D = false;
             eventDesc.is3D(out is3D);
             if (is3D)
             {

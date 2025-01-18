@@ -56,7 +56,7 @@ namespace FMODUnity
         protected override IEnumerable<FileRecord> GetBinaryFiles(BuildTarget buildTarget, bool allVariants, string suffix)
         {
             #if UNITY_2021_2_OR_NEWER
-            bool useWASM = true;
+            var useWASM = true;
             #else
             bool useWASM = false;
             #endif

@@ -73,7 +73,7 @@ namespace FMODUnity
             }
             else
             {
-                Rect rect = EditorGUILayout.GetControlRect();
+                var rect = EditorGUILayout.GetControlRect();
                 rect.xMin += EditorGUIUtility.labelWidth;
 
                 GUI.Label(rect, NotFoundWarning);

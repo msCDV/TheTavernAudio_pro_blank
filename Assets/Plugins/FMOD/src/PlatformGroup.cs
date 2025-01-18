@@ -26,7 +26,7 @@ namespace FMODUnity
 
         internal static PlatformGroup Create(string displayName, Legacy.Platform legacyIdentifier)
         {
-            PlatformGroup group = CreateInstance<PlatformGroup>();
+            var group = CreateInstance<PlatformGroup>();
             group.Identifier = GUID.Generate().ToString();
             group.displayName = displayName;
             group.legacyIdentifier = legacyIdentifier;

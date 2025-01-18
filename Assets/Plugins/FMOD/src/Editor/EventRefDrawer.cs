@@ -43,26 +43,26 @@ namespace FMODUnity
             {
                 HandleDragEvents(position, property);
 
-                EventReference eventReference = property.GetEventReference();
-                EditorEventRef editorEventRef = GetEditorEventRef(eventReference);
+                var eventReference = property.GetEventReference();
+                var editorEventRef = GetEditorEventRef(eventReference);
 
-                float baseHeight = GetBaseHeight();
+                var baseHeight = GetBaseHeight();
 
-                Rect headerRect = position;
+                var headerRect = position;
                 headerRect.width = EditorGUIUtility.labelWidth;
                 headerRect.height = baseHeight;
 
                 property.isExpanded = EditorGUI.Foldout(headerRect, property.isExpanded, label, true);
 
-                Rect addRect = new Rect(position.xMax - addIcon.width - 7, position.y, addIcon.width + 7, baseHeight);
-                Rect openRect = new Rect(addRect.x - openIcon.width - 7, position.y, openIcon.width + 6, baseHeight);
-                Rect searchRect = new Rect(openRect.x - browseIcon.width - 9, position.y, browseIcon.width + 8, baseHeight);
-                Rect pathRect = position;
+                var addRect = new Rect(position.xMax - addIcon.width - 7, position.y, addIcon.width + 7, baseHeight);
+                var openRect = new Rect(addRect.x - openIcon.width - 7, position.y, openIcon.width + 6, baseHeight);
+                var searchRect = new Rect(openRect.x - browseIcon.width - 9, position.y, browseIcon.width + 8, baseHeight);
+                var pathRect = position;
                 pathRect.xMin = headerRect.xMax;
                 pathRect.xMax = searchRect.x - 3;
                 pathRect.height = baseHeight;
 
-                SerializedProperty pathProperty = GetPathProperty(property);
+                var pathProperty = GetPathProperty(property);
 
                 using (var scope = new EditorGUI.ChangeCheckScope())
                 {
@@ -103,19 +103,19 @@ namespace FMODUnity
                 if (GUI.Button(openRect, new GUIContent(openIcon, "Open In Browser"), buttonStyle))
                 {
                     EventBrowser.ShowWindow();
-                    EventBrowser eventBrowser = EditorWindow.GetWindow<EventBrowser>();
+                    var eventBrowser = EditorWindow.GetWindow<EventBrowser>();
                     eventBrowser.FrameEvent(pathProperty.stringValue);
                 }
 
                 if (editorEventRef != null)
                 {
-                    float labelY = headerRect.y + baseHeight;
+                    var labelY = headerRect.y + baseHeight;
 
-                    MismatchInfo mismatch = GetMismatch(eventReference, editorEventRef);
+                    var mismatch = GetMismatch(eventReference, editorEventRef);
 
                     if (mismatch != null)
                     {
-                        Rect warningRect = pathRect;
+                        var warningRect = pathRect;
                         warningRect.xMax = position.xMax;
                         warningRect.y = labelY;
                         warningRect.height = WarningSize().y;
@@ -129,17 +129,17 @@ namespace FMODUnity
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            Rect labelRect = EditorGUI.IndentedRect(headerRect);
+                            var labelRect = EditorGUI.IndentedRect(headerRect);
                             labelRect.y = labelY;
 
-                            Rect valueRect = labelRect;
+                            var valueRect = labelRect;
                             valueRect.xMin = labelRect.xMax;
                             valueRect.xMax = position.xMax - copyIcon.width - 7;
 
                             GUI.Label(labelRect, new GUIContent("GUID"));
                             GUI.Label(valueRect, eventReference.Guid.ToString());
 
-                            Rect copyRect = valueRect;
+                            var copyRect = valueRect;
                             copyRect.xMin = valueRect.xMax;
                             copyRect.xMax = position.xMax;
 
@@ -177,11 +177,11 @@ namespace FMODUnity
                 }
                 else
                 {
-                    EditorEventRef renamedEvent = GetRenamedEventRef(eventReference);
+                    var renamedEvent = GetRenamedEventRef(eventReference);
 
                     if (renamedEvent != null)
                     {
-                        MismatchInfo mismatch = new MismatchInfo() {
+                        var mismatch = new MismatchInfo() {
                             Message = string.Format("Moved to {0}", renamedEvent.Path),
                             HelpText = string.Format(
                                 "This event has been moved in FMOD Studio.\n" +
@@ -196,7 +196,7 @@ namespace FMODUnity
 
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            Rect mismatchRect = pathRect;
+                            var mismatchRect = pathRect;
 
                             mismatchRect.xMin = position.xMin;
                             mismatchRect.xMax = position.xMax;
@@ -210,7 +210,7 @@ namespace FMODUnity
                     }
                     else
                     {
-                        Rect labelRect = pathRect;
+                        var labelRect = pathRect;
                         labelRect.xMax = position.xMax;
                         labelRect.y += baseHeight;
                         labelRect.height = WarningSize().y;
@@ -223,7 +223,7 @@ namespace FMODUnity
 
         private static void HandleDragEvents(Rect position, SerializedProperty property)
         {
-            Event e = Event.current;
+            var e = Event.current;
 
             if (e.type == EventType.DragPerform && position.Contains(e.mousePosition))
             {
@@ -231,7 +231,7 @@ namespace FMODUnity
                     DragAndDrop.objectReferences[0] != null &&
                     DragAndDrop.objectReferences[0].GetType() == typeof(EditorEventRef))
                 {
-                    EditorEventRef eventRef = DragAndDrop.objectReferences[0] as EditorEventRef;
+                    var eventRef = DragAndDrop.objectReferences[0] as EditorEventRef;
 
                     property.SetEventReference(eventRef.Guid, eventRef.Path);
 
@@ -266,14 +266,14 @@ namespace FMODUnity
         {
             rect = EditorUtils.DrawHelpButton(rect, () => new SimpleHelp(mismatch.HelpText, 400));
 
-            Rect repairRect = new Rect(repairButtonX, rect.y, repairButtonWidth, GetBaseHeight());
+            var repairRect = new Rect(repairButtonX, rect.y, repairButtonWidth, GetBaseHeight());
 
             if (GUI.Button(repairRect, new GUIContent(RepairIcon, mismatch.RepairTooltip), buttonStyle))
             {
                 mismatch.RepairAction(property);
             }
 
-            Rect labelRect = rect;
+            var labelRect = rect;
             labelRect.xMax = repairRect.xMin;
 
             GUI.Label(labelRect, new GUIContent(mismatch.Message, WarningIcon));
@@ -323,7 +323,7 @@ namespace FMODUnity
 
         private static void SetEvent(SerializedProperty property, string path)
         {
-            EditorEventRef eventRef = EventManager.EventFromPath(path);
+            var eventRef = EventManager.EventFromPath(path);
 
             if (eventRef != null)
             {
@@ -361,7 +361,7 @@ namespace FMODUnity
         {
             if (Settings.Instance.EventLinkage == EventLinkage.Path && !eventReference.Guid.IsNull)
             {
-                EditorEventRef editorEventRef = EventManager.EventFromGUID(eventReference.Guid);
+                var editorEventRef = EventManager.EventFromGUID(eventReference.Guid);
 
                 if (editorEventRef != null && editorEventRef.Path != eventReference.Path)
                 {
@@ -374,10 +374,10 @@ namespace FMODUnity
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            float baseHeight = GetBaseHeight();
+            var baseHeight = GetBaseHeight();
 
-            EventReference eventReference = property.GetEventReference();
-            EditorEventRef editorEventRef = GetEditorEventRef(eventReference);
+            var eventReference = property.GetEventReference();
+            var editorEventRef = GetEditorEventRef(eventReference);
 
             if (editorEventRef == null)
             {
@@ -439,7 +439,7 @@ namespace FMODUnity
 
             label = EditorGUI.BeginProperty(position, label, property);
 
-            Rect pathRect = position;
+            var pathRect = position;
             pathRect.height = EditorGUIUtility.singleLineHeight;
 
             pathRect = EditorGUI.PrefixLabel(pathRect, label);
@@ -447,9 +447,9 @@ namespace FMODUnity
 
             using (new EditorGUI.IndentLevelScope())
             {
-                GUIContent content = StatusContent(property);
+                var content = StatusContent(property);
 
-                Rect infoRect = EditorGUI.IndentedRect(position);
+                var infoRect = EditorGUI.IndentedRect(position);
                 infoRect.y = pathRect.yMax;
                 infoRect.height = StatusSize(content).y;
 
@@ -464,7 +464,7 @@ namespace FMODUnity
         private GUIContent StatusContent(SerializedProperty property)
         {
 #pragma warning disable 0618 // Suppress the warning about using the obsolete EventRefAttribute class
-            string migrationTarget = (attribute as EventRefAttribute).MigrateTo;
+            var migrationTarget = (attribute as EventRefAttribute).MigrateTo;
 #pragma warning restore 0618
 
             if (string.IsNullOrEmpty(migrationTarget))
@@ -475,14 +475,14 @@ namespace FMODUnity
             }
             else
             {
-                int parentPathLength = property.propertyPath.LastIndexOf('.');
+                var parentPathLength = property.propertyPath.LastIndexOf('.');
 
                 if (parentPathLength >= 0)
                 {
                     migrationTarget = string.Format("{0}.{1}", property.propertyPath.Remove(parentPathLength), migrationTarget);
                 }
 
-                SerializedProperty targetProperty = property.serializedObject.FindProperty(migrationTarget);
+                var targetProperty = property.serializedObject.FindProperty(migrationTarget);
 
                 if (targetProperty != null)
                 {

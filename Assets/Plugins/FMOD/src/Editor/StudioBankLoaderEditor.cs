@@ -32,10 +32,10 @@ namespace FMODUnity
             if (GUILayout.Button("Add Bank", GUILayout.ExpandWidth(false)))
             {
                 banks.InsertArrayElementAtIndex(banks.arraySize);
-                SerializedProperty newBank = banks.GetArrayElementAtIndex(banks.arraySize - 1);
+                var newBank = banks.GetArrayElementAtIndex(banks.arraySize - 1);
                 newBank.stringValue = "";
 
-                EventBrowser browser = CreateInstance<EventBrowser>();
+                var browser = CreateInstance<EventBrowser>();
 
                 browser.titleContent = new GUIContent("Select FMOD Bank");
 
@@ -44,7 +44,7 @@ namespace FMODUnity
             }
 
             Texture deleteTexture = EditorUtils.LoadImage("Delete.png");
-            GUIContent deleteContent = new GUIContent(deleteTexture, "Delete Bank");
+            var deleteContent = new GUIContent(deleteTexture, "Delete Bank");
 
             var buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.padding.top = buttonStyle.padding.bottom = 1;
@@ -52,7 +52,7 @@ namespace FMODUnity
             buttonStyle.padding.left = buttonStyle.padding.right = 4;
             buttonStyle.fixedHeight = GUI.skin.textField.CalcSize(new GUIContent()).y;
 
-            for (int i = 0; i < banks.arraySize; i++)
+            for (var i = 0; i < banks.arraySize; i++)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PropertyField(banks.GetArrayElementAtIndex(i), GUIContent.none);
@@ -67,14 +67,14 @@ namespace FMODUnity
 
             EditorGUILayout.EndHorizontal();
 
-            Event e = Event.current;
+            var e = Event.current;
             if (e.type == EventType.DragPerform)
             {
                 if (DragAndDrop.objectReferences.Length > 0 &&
                     DragAndDrop.objectReferences[0] != null &&
                     DragAndDrop.objectReferences[0].GetType() == typeof(EditorBankRef))
                 {
-                    int pos = banks.arraySize;
+                    var pos = banks.arraySize;
                     banks.InsertArrayElementAtIndex(pos);
                     var pathProperty = banks.GetArrayElementAtIndex(pos);
 

@@ -123,25 +123,25 @@ namespace FMODUnity
 
         private void DrawStatus()
         {
-            GUIStyle labelStyle = new GUIStyle(EditorStyles.whiteLargeLabel);
+            var labelStyle = new GUIStyle(EditorStyles.whiteLargeLabel);
             labelStyle.alignment = TextAnchor.MiddleCenter;
 
-            GUIStyle largeErrorStyle = new GUIStyle(labelStyle);
+            var largeErrorStyle = new GUIStyle(labelStyle);
             largeErrorStyle.normal.textColor = Color.red;
 
-            GUIStyle errorStyle = new GUIStyle(GUI.skin.box);
+            var errorStyle = new GUIStyle(GUI.skin.box);
             errorStyle.alignment = TextAnchor.UpperLeft;
             errorStyle.wordWrap = true;
             errorStyle.normal.textColor = Color.red;
 
-            float timeSinceFileChange = BankRefresher.TimeSinceSourceFileChange();
+            var timeSinceFileChange = BankRefresher.TimeSinceSourceFileChange();
 
             if (timeSinceFileChange != float.MaxValue)
             {
                 GUILayout.Label(string.Format("The FMOD source banks changed {0} ago.",
                     EditorUtils.DurationString(timeSinceFileChange)), labelStyle);
 
-                float timeUntilBankRefresh = BankRefresher.TimeUntilBankRefresh();
+                var timeUntilBankRefresh = BankRefresher.TimeUntilBankRefresh();
 
                 if (timeUntilBankRefresh == 0)
                 {
@@ -176,7 +176,7 @@ namespace FMODUnity
 
             if (closeTime != float.MaxValue)
             {
-                float timeUntilClose = Mathf.Max(0, closeTime - Time.realtimeSinceStartup);
+                var timeUntilClose = Mathf.Max(0, closeTime - Time.realtimeSinceStartup);
 
                 if (DrawCountdown("Closing", timeUntilClose, CloseDelay, labelStyle) || ConsumeEscapeKey())
                 {
@@ -191,20 +191,20 @@ namespace FMODUnity
 
             const float boxHeight = 2;
 
-            Rect controlRect = EditorGUILayout.GetControlRect(false, boxHeight * 2);
+            var controlRect = EditorGUILayout.GetControlRect(false, boxHeight * 2);
 
-            Rect boxRect = controlRect;
+            var boxRect = controlRect;
             boxRect.width *= remainingTime / totalTime;
             boxRect.x += (controlRect.width - boxRect.width) / 2;
             boxRect.height = 2;
 
             GUI.DrawTexture(boxRect, EditorGUIUtility.whiteTexture);
 
-            GUIContent cancelContent = new GUIContent("Cancel");
+            var cancelContent = new GUIContent("Cancel");
 
             controlRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight * 2);
 
-            Rect buttonRect = controlRect;
+            var buttonRect = controlRect;
             buttonRect.width = 100;
             buttonRect.x += (controlRect.width - buttonRect.width) / 2;
 
@@ -213,14 +213,14 @@ namespace FMODUnity
 
         private void DrawButtons()
         {
-            Rect rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight * 2);
+            var rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight * 2);
 
-            int buttonCount = 2;
+            var buttonCount = 2;
 
-            Rect closeRect = rect;
+            var closeRect = rect;
             closeRect.width = rect.width / buttonCount;
 
-            Rect refreshRect = rect;
+            var refreshRect = rect;
             refreshRect.xMin = closeRect.xMax;
 
             if (GUI.Button(closeRect, "Close"))

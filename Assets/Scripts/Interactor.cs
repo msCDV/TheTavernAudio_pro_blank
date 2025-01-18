@@ -1,37 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-interface IInteractable
+internal interface IInteractable
 {
     public void Interact();
 }
 
 public class Interactor : MonoBehaviour
 {
+    [FormerlySerializedAs("InteractorSource")] public Transform interactorSource;
+    [FormerlySerializedAs("InteractRange")] public float interactRange;
 
-    public Transform InteractorSource;
-    public float InteractRange;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (!Input.GetKeyDown(KeyCode.E)) return;
+        var r = new Ray(interactorSource.position, interactorSource.forward);
+        if (!Physics.Raycast(r, out var hitInfo, interactRange)) return;
+        if (hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactObj))
         {
-            Ray r = new Ray(InteractorSource.position, InteractorSource.forward);
-            if (Physics.Raycast(r, out RaycastHit hitInfo, InteractRange))
-            {
-                if (hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactObj))
-                {
-                    interactObj.Interact();
-                }
-            }
+            interactObj.Interact();
         }
     }
 }

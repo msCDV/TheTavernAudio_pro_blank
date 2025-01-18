@@ -61,7 +61,7 @@ namespace FMODUnity
             yield return new FileRecord("fmod.jar")
                 .WithAbsoluteVersion(FileLayout.Release_1_10, "Plugins/Android/fmod.jar");
 
-            foreach (string architecture in Architectures)
+            foreach (var architecture in Architectures)
             {
                 yield return new FileRecord(string.Format("{0}/libfmod{1}.so", architecture, suffix));
                 yield return new FileRecord(string.Format("{0}/libfmodstudio{1}.so", architecture, suffix));
@@ -70,7 +70,7 @@ namespace FMODUnity
 
         protected override IEnumerable<FileRecord> GetOptionalBinaryFiles(BuildTarget buildTarget, bool allVariants)
         {
-            foreach (string architecture in Architectures)
+            foreach (var architecture in Architectures)
             {
                 yield return new FileRecord(string.Format("{0}/libgvraudio.so", architecture));
                 yield return new FileRecord(string.Format("{0}/libresonanceaudio.so", architecture));

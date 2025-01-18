@@ -1,23 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Rooms_new : MonoBehaviour
+public class RoomsNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
     private void Start()
     {
-        audioSystem = FindObjectOfType<AudioSystem>();
+        _audioSystem = FindObjectOfType<AudioSystem>();
     }
 
     private void OnTriggerStay(Collider other)
     {
-        audioSystem.RoomsAmbientON();
+        _audioSystem.RoomsAmbientOn();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        audioSystem.RoomsAmbientOFF();
+        _audioSystem.RoomsAmbientOff();
     }
 }

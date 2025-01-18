@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -16,64 +14,64 @@ public class FPSController : MonoBehaviour
     public float lookXLimit = 45f;
 
 
-    Vector3 moveDirection = Vector3.zero;
-    float rotationX = 0;
+    private Vector3 _moveDirection = Vector3.zero;
+    private float _rotationX;
 
     public bool canMove = true;
 
 
-    CharacterController characterController;
-    void Start()
+    private CharacterController _characterController;
+
+    private void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        _characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    void Update()
+    private void Update()
     {
-
         #region Handles Movement
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-        Vector3 right = transform.TransformDirection(Vector3.right);
 
-        // Press Left Shift to run
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
-        float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
-        float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
-        float movementDirectionY = moveDirection.y;
-        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
+        var forward = transform.TransformDirection(Vector3.forward);
+        var right = transform.TransformDirection(Vector3.right);
+
+        var isRunning = Input.GetKey(KeyCode.LeftShift);
+        var curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
+        var curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
+        var movementDirectionY = _moveDirection.y;
+        _moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
         #endregion
 
         #region Handles Jumping
-        if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
+
+        if (Input.GetButton("Jump") && canMove && _characterController.isGrounded)
         {
-            moveDirection.y = jumpPower;
+            _moveDirection.y = jumpPower;
         }
         else
         {
-            moveDirection.y = movementDirectionY;
+            _moveDirection.y = movementDirectionY;
         }
 
-        if (!characterController.isGrounded)
+        if (!_characterController.isGrounded)
         {
-            moveDirection.y -= gravity * Time.deltaTime;
+            _moveDirection.y -= gravity * Time.deltaTime;
         }
 
         #endregion
 
         #region Handles Rotation
-        characterController.Move(moveDirection * Time.deltaTime);
 
-        if (canMove)
-        {
-            rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
-            rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-            playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
-        }
+        _characterController.Move(_moveDirection * Time.deltaTime);
+
+        if (!canMove) return;
+        _rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
+        _rotationX = Mathf.Clamp(_rotationX, -lookXLimit, lookXLimit);
+        playerCamera.transform.localRotation = Quaternion.Euler(_rotationX, 0, 0);
+        transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
 
         #endregion
     }
-}  
+}

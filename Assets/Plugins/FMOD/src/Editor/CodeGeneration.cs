@@ -11,9 +11,9 @@ namespace FMODUnity
         public static void GenerateStaticPluginRegistration(string filePath, Platform platform,
             Action<string> reportError)
         {
-            List<string> validatedPlugins = ValidateStaticPlugins(platform.StaticPlugins, reportError);
+            var validatedPlugins = ValidateStaticPlugins(platform.StaticPlugins, reportError);
 
-            using (StreamWriter file = new StreamWriter(filePath))
+            using (var file = new StreamWriter(filePath))
             {
                 WriteStaticPluginRegistration(file, platform.IsFMODStaticallyLinked, validatedPlugins);
             }
@@ -38,7 +38,7 @@ namespace FMODUnity
             file.WriteLine("    {");
 
             // Import the plugin functions
-            foreach (string pluginFunction in pluginFunctions)
+            foreach (var pluginFunction in pluginFunctions)
             {
                 file.WriteLine("        [DllImport(\"__Internal\")]");
                 file.WriteLine("        private static extern IntPtr {0}();", pluginFunction);
@@ -58,7 +58,7 @@ namespace FMODUnity
             {
                 file.WriteLine("            FMOD.RESULT result;");
 
-                foreach (string pluginFunction in pluginFunctions)
+                foreach (var pluginFunction in pluginFunctions)
                 {
                     file.WriteLine();
                     file.WriteLine("            result = FMOD5_System_RegisterDSP(coreSystem.handle, {0}(), IntPtr.Zero);", pluginFunction);
@@ -75,13 +75,13 @@ namespace FMODUnity
 
         private static List<string> ValidateStaticPlugins(List<string> staticPlugins, Action<string> reportError)
         {
-            List<string> result = new List<string>();
+            var result = new List<string>();
 
-            for (int i = 0; i < staticPlugins.Count; ++i)
+            for (var i = 0; i < staticPlugins.Count; ++i)
             {
-                string functionName = staticPlugins[i];
+                var functionName = staticPlugins[i];
 
-                string trimmedName = (functionName != null) ? functionName.Trim() : null;
+                var trimmedName = (functionName != null) ? functionName.Trim() : null;
 
                 if (string.IsNullOrEmpty(trimmedName))
                 {
@@ -105,7 +105,7 @@ namespace FMODUnity
                 return false;
             }
 
-            for (int i = 1; i < name.Length; ++i)
+            for (var i = 1; i < name.Length; ++i)
             {
                 if (!(char.IsLetterOrDigit(name[i]) || name[i] == '_'))
                 {

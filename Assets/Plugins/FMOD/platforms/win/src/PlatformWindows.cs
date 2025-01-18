@@ -84,7 +84,7 @@ namespace FMODUnity
 
         protected override IEnumerable<FileRecord> GetBinaryFiles(BuildTarget buildTarget, bool allVariants, string suffix)
         {
-            string dllSuffix = suffix + ".dll";
+            var dllSuffix = suffix + ".dll";
 
             switch (buildTarget)
             {
@@ -95,7 +95,7 @@ namespace FMODUnity
                     yield return new FileRecord("x86_64/fmodstudio" + dllSuffix);
                     break;
                 case BuildTarget.WSAPlayer:
-                    foreach (string architecture in new[] { "arm", "x64", "x86" })
+                    foreach (var architecture in new[] { "arm", "x64", "x86" })
                     {
                         yield return new FileRecord(string.Format("{0}/fmod{1}", architecture, dllSuffix));
                         yield return new FileRecord(string.Format("{0}/fmodstudio{1}", architecture, dllSuffix));

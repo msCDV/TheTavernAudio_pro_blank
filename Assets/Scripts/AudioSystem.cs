@@ -1,384 +1,319 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using FMODUnity;
-using System.Threading;
-using Unity.VisualScripting;
 using FMOD.Studio;
+using UnityEngine.Serialization;
 
 public class AudioSystem : MonoBehaviour
 {
-    // EMITTERS //
-    public FMODUnity.StudioEventEmitter TavernMusic; // œcie¿ka do event emittera na scenie
-    public StudioEventEmitter TavernAmb;
-    public StudioEventEmitter TavernFireplace;
-    public StudioEventEmitter OutsideAmb;
+    [FormerlySerializedAs("TavernMusic")] public StudioEventEmitter tavernMusic;
 
-    //AudioControl tavernMusic = FindObjectOfType<AudioControl>(); Odwo³ywanie siê do zewnêtrznego skryptu
-    //tavernMusic.tavernMusic.IsPlaying();
+    [FormerlySerializedAs("TavernFireplace")]
+    public StudioEventEmitter tavernFireplace;
 
-    // EVENTS //
-    FMOD.Studio.EventInstance DoorsSound;
+    private EventInstance _doorsSound;
     public EventReference doorsEvent;
-    FMOD.Studio.EventInstance FootstepsSound;
+    private EventInstance _footstepsSound;
     public EventReference footstepsEvent;
-    FMOD.Studio.EventInstance JumpSound;
+    private EventInstance _jumpSound;
     public EventReference jumpEvent;
-    FMOD.Studio.EventInstance LandSound;
+    private EventInstance _landSound;
     public EventReference landEvent;
-    public FMOD.Studio.EventInstance SpellSound;
+    public EventInstance SpellSound;
     public EventReference spellEvent;
 
-    // SNAPSHOTS //
-    FMOD.Studio.EventInstance InsideRoom;
+    private EventInstance _insideRoom;
     public EventReference insideRoomSnap;
-    public FMOD.Studio.EventInstance Outside;
+    private EventInstance _outside;
     public EventReference outsideSnapshot;
-    FMOD.Studio.EventInstance HealthSnapshot;
+    private EventInstance _healthSnapshot;
     public EventReference healthSnapshot;
 
-    // VCA // 
-    public FMOD.Studio.VCA GlobalVCA; // klasa VCA
-    public FMOD.Studio.VCA MusicVCA;
-    public FMOD.Studio.VCA TavernVCA;
-    public FMOD.Studio.VCA OutsideVCA;
+    public VCA GlobalVca;
+    public VCA MusicVca;
+    public VCA TavernVca;
+    public VCA OutsideVca;
 
-    // STRING NAMES // 
-    private string footsteps_surface;
+    private const string FootstepsSurface = "Footsteps_surface";
+    private const string Open = "Open";
+    private const string Close = "Close";
+    private const string Door1 = "Tavern_door_room";
+    private const string Door2 = "Tavern_door_room (1)";
+    private const string Door3 = "Tavern_door_room (2)";
     public string doorsName;
-    private string open;
-    private string close;
-    private string door_1;
-    private string door_2;
-    private string door_3;
 
-    // FLAGS // 
-    private bool doorsOpened_1;
-    private bool doorsOpened_2;
-    private bool doorsOpened_3;
+    private bool _doorsOpened1 = true;
+    private bool _doorsOpened2 = true;
+    private bool _doorsOpened3 = true;
     public bool isGrounded = true;
-    private bool isJumping = false;
-    private bool outsideSnapActivated = false;
+    private bool _isJumping;
+    private bool _outsideSnapActivated;
     public bool roomsAmbientActivated;
     public bool isMusicPlaying = true;
     public bool muteActive;
     public bool musicMuteActive;
     public bool tavernMuteActive;
     public bool outsideMuteActive;
-    private bool healthSnapActive;
-    private PLAYBACK_STATE spell_pb;
+    private bool _healthSnapActive;
+    private PLAYBACK_STATE _spellPb;
 
-    // DISTANCE TO GROUND //
     public float distToGround;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        // VCA SETUP //
-        GlobalVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Mute"); // podanie klasie VCA œcie¿ki do wybranego eventu / snapshotu
-        MusicVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Music");
-        TavernVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Tavern_amb");
-        OutsideVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Outside_amb");
-        GlobalVCA.setVolume(DecibelToLinear(-100));
-
-        // START SETUP //
-        doorsOpened_1 = true;
-        doorsOpened_2 = true;
-        doorsOpened_3 = true;
+        GlobalVca = RuntimeManager.GetVCA("vca:/Mute");
+        MusicVca = RuntimeManager.GetVCA("vca:/Music");
+        TavernVca = RuntimeManager.GetVCA("vca:/Tavern_amb");
+        OutsideVca = RuntimeManager.GetVCA("vca:/Outside_amb");
+        GlobalVca.setVolume(DecibelToLinear(-100));
         muteActive = true;
-        isGrounded = true;
-        isJumping = false;
-        outsideSnapActivated = false;
-        healthSnapActive = false;
-        footsteps_surface = "Footsteps_surface";
-        open = "Open";
-        close = "Close";
-        door_1 = "Tavern_door_room";
-        door_2 = "Tavern_door_room (1)";
-        door_3 = "Tavern_door_room (2)";
-
-    // CALC DISTANCE TO GROUND // 
-    distToGround = GetComponent<Collider>().bounds.extents.y;
-
-        if (TavernFireplace == null)
-            Debug.LogError("NULL");
+        distToGround = GetComponent<Collider>().bounds.extents.y;
+        if (tavernFireplace == null) Debug.LogError("tavernFireplace is null");
     }
 
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FUNCTIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
-
-    // GROUNDING CHECKER //
     public bool IsGrounded()
     {
         return Physics.Raycast(transform.position, Vector3.down, distToGround + 0.5f);
     }
 
-    // DECIBEL TO LINEAR //  
-    public float DecibelToLinear(float dB)
+    private static float DecibelToLinear(float dB)
     {
-        float linear = Mathf.Pow(10.0f, dB / 20f);
+        var linear = Mathf.Pow(10.0f, dB / 20f);
         return linear;
     }
 
-    // ROOMS AMBIENT STATUS // 
-    public void RoomsAmbientON()
+    public void RoomsAmbientOn()
     {
         roomsAmbientActivated = true;
     }
-    public void RoomsAmbientOFF()
+
+    public void RoomsAmbientOff()
     {
         roomsAmbientActivated = false;
     }
 
-    // FIREPLACE SOUND // 
-    public void FireplaceOFF()
+    public void FireplaceOff()
     {
-        TavernFireplace.SetParameter("Fire", 0);
+        tavernFireplace.SetParameter("Fire", 0);
     }
 
-    public void FireplaceON()
+    public void FireplaceOn()
     {
-        TavernFireplace.SetParameter("Fire", 1);
+        tavernFireplace.SetParameter("Fire", 1);
     }
 
-    // DOORS SOUNDS //
-    void DoorsManager(ref FMOD.Studio.EventInstance doorSoundInstance, int doorsNumber, string doorState)
+    private void DoorsManager(ref EventInstance doorSoundInstance, int doorsNumber, string doorState)
     {
-        doorSoundInstance = FMODUnity.RuntimeManager.CreateInstance(doorsEvent);
+        doorSoundInstance = RuntimeManager.CreateInstance(doorsEvent);
         doorSoundInstance.setParameterByNameWithLabel("Doors", doorState);
-        doorSoundInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject.transform));
+        doorSoundInstance.set3DAttributes(gameObject.transform.To3DAttributes());
         doorSoundInstance.start();
         doorSoundInstance.release();
 
-        if (doorsNumber == 1)
-            doorsOpened_1 = !doorsOpened_1;
-        else if (doorsNumber == 2)
-            doorsOpened_2 = !doorsOpened_2;
-        else if (doorsNumber == 3)
-            doorsOpened_3 = !doorsOpened_3;
+        switch (doorsNumber)
+        {
+            case 1:
+                _doorsOpened1 = !_doorsOpened1;
+                break;
+            case 2:
+                _doorsOpened2 = !_doorsOpened2;
+                break;
+            case 3:
+                _doorsOpened3 = !_doorsOpened3;
+                break;
+        }
     }
+
     public void PlayDoorSound()
     {
-        if (doorsName == door_1)
+        if (doorsName == Door1)
         {
-            if(doorsOpened_1)
-                DoorsManager(ref DoorsSound, 1, close);
+            if (_doorsOpened1)
+                DoorsManager(ref _doorsSound, 1, Close);
             else
-                DoorsManager(ref DoorsSound, 1, open);
+                DoorsManager(ref _doorsSound, 1, Open);
         }
-        else if (doorsName == door_2)
+        else if (doorsName == Door2)
         {
-            if (doorsOpened_2)
-                DoorsManager(ref DoorsSound, 2, close);
+            if (_doorsOpened2)
+                DoorsManager(ref _doorsSound, 2, Close);
             else
-                DoorsManager(ref DoorsSound, 2, open);
+                DoorsManager(ref _doorsSound, 2, Open);
         }
-        else if (doorsName == door_3)
+        else if (doorsName == Door3)
         {
-            if (doorsOpened_3)
-                DoorsManager(ref DoorsSound, 3, close);
+            if (_doorsOpened3)
+                DoorsManager(ref _doorsSound, 3, Close);
             else
-                DoorsManager(ref DoorsSound, 3, open);
+                DoorsManager(ref _doorsSound, 3, Open);
         }
-    }    
+    }
 
     // FOOTSTEPS SOUNDS // 
     public void PlayFootsteps()
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround + 0.5f))
+        if (!Physics.Raycast(transform.position, Vector3.down, out var hit, distToGround + 0.5f)) return;
+        var surfaceType = hit.collider.tag switch
         {
-            string surfaceType = "Stone"; // Default surface type
-            switch (hit.collider.tag)
-            {
-                case "Wood":
-                    surfaceType = "Wood";
-                    break;
-                case "Stone":
-                case "Outside":
-                case "Inside_stone":
-                    surfaceType = "Stone";
-                    break;
-            }
+            "Wood" => "Wood",
+            "Stone" or "Outside" or "Inside_stone" => "Stone",
+            _ => "Stone"
+        };
 
-            FootstepsSound = FMODUnity.RuntimeManager.CreateInstance(footstepsEvent);
-            FootstepsSound.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject.transform));
-            FootstepsSound.setParameterByNameWithLabel(footsteps_surface, surfaceType);
-            FootstepsSound.start();
-            FootstepsSound.release();
-        }
+        _footstepsSound = RuntimeManager.CreateInstance(footstepsEvent);
+        _footstepsSound.set3DAttributes(gameObject.transform.To3DAttributes());
+        _footstepsSound.setParameterByNameWithLabel(FootstepsSurface, surfaceType);
+        _footstepsSound.start();
+        _footstepsSound.release();
     }
 
     // JUMP SOUNDS //
     public void PlayJump()
     {
+        if (!IsGrounded()) return;
+        _jumpSound = RuntimeManager.CreateInstance(jumpEvent); // "event:/Footsteps"
+
         if (IsGrounded())
         {
-            JumpSound = FMODUnity.RuntimeManager.CreateInstance(jumpEvent); // "event:/Footsteps"
-
-            if (IsGrounded())
+            if (Physics.Raycast(transform.position, Vector3.down, out var hit, distToGround + 0.5f))
             {
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround + 0.5f))
+                var surface = hit.collider.tag switch
                 {
-                    string surface = hit.collider.tag switch
-                    {
-                        "Stone" => "Stone",
-                        "Wood" => "Wood",
-                        "Inside_stone" => "Stone",
-                        "Bed" => "Bed",
-                        _ => "Stone"
-                    };
+                    "Stone" => "Stone",
+                    "Wood" => "Wood",
+                    "Inside_stone" => "Stone",
+                    "Bed" => "Bed",
+                    _ => "Stone"
+                };
 
-                    JumpSound.setParameterByNameWithLabel(footsteps_surface, surface);
-                    JumpSound.start();
-                }
+                _jumpSound.setParameterByNameWithLabel(FootstepsSurface, surface);
+                _jumpSound.start();
             }
-
-            JumpSound.release();
-            isGrounded = false;
-            isJumping = true;
         }
+
+        _jumpSound.release();
+        isGrounded = false;
+        _isJumping = true;
     }
 
     // LAND SOUNDS //
     public void PlayLanding()
     {
-        if (IsGrounded() && !isGrounded)
+        if (!IsGrounded() || isGrounded) return;
+        if (!_isJumping) return;
+        _landSound = RuntimeManager.CreateInstance(landEvent);
+
+        if (Physics.Raycast(transform.position, Vector3.down, out var hit, distToGround + 0.5f))
         {
-            if (isJumping)
+            var surface = hit.collider.tag switch
             {
-                LandSound = FMODUnity.RuntimeManager.CreateInstance(landEvent);
-                RaycastHit hit;
+                "Stone" => "Stone",
+                "Wood" => "Wood",
+                "Inside_stone" => "Stone",
+                "Bed" => "Bed",
+                _ => "Stone"
+            };
 
-                if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround + 0.5f))
-                {
-                    string surface = hit.collider.tag switch
-                    {
-                        "Stone" => "Stone",
-                        "Wood" => "Wood",
-                        "Inside_stone" => "Stone",
-                        "Bed" => "Bed",
-                        _ => "Stone"
-                    };
-
-                    LandSound.setParameterByNameWithLabel(footsteps_surface, surface);
-                    LandSound.start();
-                }
-
-                LandSound.release();
-                isGrounded = true;
-                isJumping = false;
-            }
+            _landSound.setParameterByNameWithLabel(FootstepsSurface, surface);
+            _landSound.start();
         }
+
+        _landSound.release();
+        isGrounded = true;
+        _isJumping = false;
     }
 
-    // SPELL CAST //
-    public void SpellCast()
+    public void SpellCast(string paramName, string label)
     {
         SpellSound = RuntimeManager.CreateInstance(spellEvent);
-        SpellSound.setParameterByNameWithLabel("Spell", "Looping");
+        SpellSound.setParameterByNameWithLabel(paramName, label);
         SpellSound.start();
         SpellSound.release();
     }
 
-    public void SpellRelease()
+    public void SpellRelease(string paramName, string label)
     {
-        SpellSound.setParameterByNameWithLabel("Spell", "Release");
+        SpellSound.setParameterByNameWithLabel(paramName, label);
         SpellSound.release();
     }
 
-    // SNAPSHOTS //     
     public void OutsideSnap()
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, distToGround + 0.5f))
+        if (!Physics.Raycast(transform.position, Vector3.down, out var hit, distToGround + 0.5f)) return;
+        if (hit.collider.CompareTag("Outside") && _outsideSnapActivated == false)
         {
-            if (hit.collider.CompareTag("Outside") && outsideSnapActivated == false)
-            {
-                // mechanika snapshotu
-                Outside = FMODUnity.RuntimeManager.CreateInstance(outsideSnapshot);
-                Outside.start();
-                outsideSnapActivated = !outsideSnapActivated;
-                Debug.Log(outsideSnapActivated);
-            }
-            else if (hit.collider.CompareTag("Inside_stone") && outsideSnapActivated == true)
-            {
-                // mechanika snapshotu
-                Outside.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                Outside.release();
-                outsideSnapActivated = !outsideSnapActivated;
-                Debug.Log(outsideSnapActivated);
-            }
+            _outside = RuntimeManager.CreateInstance(outsideSnapshot);
+            _outside.start();
+            _outsideSnapActivated = !_outsideSnapActivated;
+            Debug.Log(_outsideSnapActivated);
+        }
+        else if (hit.collider.CompareTag("Inside_stone") && _outsideSnapActivated)
+        {
+            _outside.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            _outside.release();
+            _outsideSnapActivated = !_outsideSnapActivated;
+            Debug.Log(_outsideSnapActivated);
         }
     }
 
     private void RoomsSnapInstanceStart()
     {
         Debug.Log("doors closed");
-        InsideRoom.start();
-        InsideRoom.release();
+        _insideRoom.start();
+        _insideRoom.release();
     }
 
     private void RoomsSnapInstanceStop()
     {
         Debug.Log("doors opened");
-        InsideRoom.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        InsideRoom.release();
+        _insideRoom.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        _insideRoom.release();
     }
 
     public void RoomsSnap()
     {
-        Debug.LogError(InsideRoom.isValid());
+        Debug.LogError(_insideRoom.isValid());
 
-        if (!InsideRoom.isValid())
+        if (!_insideRoom.isValid())
         {
-            InsideRoom = FMODUnity.RuntimeManager.CreateInstance(insideRoomSnap);
+            _insideRoom = RuntimeManager.CreateInstance(insideRoomSnap);
         }
-        
-        if (roomsAmbientActivated == true && doorsName == door_1 && doorsOpened_1 == false)
+
+        switch (roomsAmbientActivated)
         {
-            RoomsSnapInstanceStart();
-        }
-        else if (roomsAmbientActivated == true && doorsName == door_2 && doorsOpened_2 == false)
-        {
-            RoomsSnapInstanceStart();
-        }
-        else if (roomsAmbientActivated == true && doorsName == door_3 && doorsOpened_3 == false)
-        {
-            RoomsSnapInstanceStart();
-        }
-        else
-        {
-            RoomsSnapInstanceStop();
+            case true when doorsName == Door1 && _doorsOpened1 == false:
+            case true when doorsName == Door2 && _doorsOpened2 == false:
+            case true when doorsName == Door3 && _doorsOpened3 == false:
+                RoomsSnapInstanceStart();
+                break;
+            default:
+                RoomsSnapInstanceStop();
+                break;
         }
     }
 
     public void HealthSnap()
     {
-        if (!healthSnapActive)
+        switch (_healthSnapActive)
         {
-            HealthSnapshot = FMODUnity.RuntimeManager.CreateInstance(healthSnapshot);
-            HealthSnapshot.start();
-            healthSnapActive = !healthSnapActive;
-        }
-        else if (healthSnapActive)
-        {
-            HealthSnapshot.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            HealthSnapshot.release();
-            healthSnapActive = !healthSnapActive;
+            case false:
+                _healthSnapshot = RuntimeManager.CreateInstance(healthSnapshot);
+                _healthSnapshot.start();
+                _healthSnapActive = !_healthSnapActive;
+                break;
+            case true:
+                _healthSnapshot.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                _healthSnapshot.release();
+                _healthSnapActive = !_healthSnapActive;
+                break;
         }
     }
 
-    // VCA // 
-    public void ToggleMute(KeyCode key, ref bool muteActive, FMOD.Studio.VCA vca)
+    public static void ToggleMute(KeyCode key, ref bool muteActive, VCA vca)
     {
-        if (Input.GetKeyDown(key))
-        {
-            float volume = muteActive ? 0 : -100;
-            vca.setVolume(DecibelToLinear(volume));
-            muteActive = !muteActive;
-        }
+        if (!Input.GetKeyDown(key)) return;
+        float volume = muteActive ? 0 : -100;
+        vca.setVolume(DecibelToLinear(volume));
+        muteActive = !muteActive;
     }
 }

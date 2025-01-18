@@ -19,7 +19,7 @@ namespace TMPro.Examples
         private TMP_Text m_textMeshPro;
 
 
-        void Awake()
+        private void Awake()
         {
             // Get Reference to TextMeshPro Component
             m_textMeshPro = GetComponent<TMP_Text>();
@@ -44,16 +44,16 @@ namespace TMPro.Examples
         }
 
 
-        IEnumerator Start()
+        private IEnumerator Start()
         {
 
             // Force and update of the mesh to get valid information.
             m_textMeshPro.ForceMeshUpdate();
 
 
-            int totalVisibleCharacters = m_textMeshPro.textInfo.characterCount; // Get # of Visible Character in text object
-            int counter = 0;
-            int visibleCount = 0;
+            var totalVisibleCharacters = m_textMeshPro.textInfo.characterCount; // Get # of Visible Character in text object
+            var counter = 0;
+            var visibleCount = 0;
 
             while (true)
             {

@@ -74,7 +74,7 @@ namespace FMODUnity
         [MenuItem(MenuPath)]
         public static void ShowWindow()
         {
-            EventReferenceUpdater updater = GetWindow<EventReferenceUpdater>("FMOD Event Reference Updater");
+            var updater = GetWindow<EventReferenceUpdater>("FMOD Event Reference Updater");
             updater.minSize = new Vector2(800, 600);
 
             updater.SetStatus(HelpText);
@@ -131,19 +131,19 @@ namespace FMODUnity
 
         private void BeginExecuting()
         {
-            Task[] enabledTasks = tasks.Where(t => t.CanExecute()).ToArray();
+            var enabledTasks = tasks.Where(t => t.CanExecute()).ToArray();
 
             if (enabledTasks.Length == 0)
             {
                 return;
             }
 
-            Asset[] affectedAssets = enabledTasks.Select(t => assets[t.AssetIndex]).Distinct().ToArray();
+            var affectedAssets = enabledTasks.Select(t => assets[t.AssetIndex]).Distinct().ToArray();
 
-            int prefabCount = affectedAssets.Count(a => IsPrefab(a.Type));
-            int sceneCount = affectedAssets.Count(a => a.Type == AssetType.Scene);
+            var prefabCount = affectedAssets.Count(a => IsPrefab(a.Type));
+            var sceneCount = affectedAssets.Count(a => a.Type == AssetType.Scene);
 
-            string warningText = string.Format(
+            var warningText = string.Format(
                 "Executing these {0} tasks will change {1} prefabs and {2} scenes on disk.\n\n" +
                 "Please ensure you have committed any outstanding changes to source control before continuing!",
                 enabledTasks.Length, prefabCount, sceneCount);
@@ -200,9 +200,9 @@ namespace FMODUnity
 
         private IEnumerator<string> SearchProject()
         {
-            string[] prefabGuids = AssetDatabase.FindAssets("t:GameObject", SearchFolders);
-            string[] sceneGuids = AssetDatabase.FindAssets("t:Scene", SearchFolders);
-            string[] scriptableObjectGuids =
+            var prefabGuids = AssetDatabase.FindAssets("t:GameObject", SearchFolders);
+            var sceneGuids = AssetDatabase.FindAssets("t:Scene", SearchFolders);
+            var scriptableObjectGuids =
                 AssetDatabase.FindAssets("t:ScriptableObject", SearchFolders).Distinct().ToArray();
 
             prefabProgress = new SearchProgress(prefabGuids.Length);
@@ -217,17 +217,17 @@ namespace FMODUnity
 
         private IEnumerable<string> SearchPrefabs(string[] guids)
         {
-            foreach (string guid in guids)
+            foreach (var guid in guids)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = AssetDatabase.GUIDToAssetPath(guid);
 
                 yield return string.Format("Searching {0}", path);
 
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
 
-                int assetIndex = -1;
+                var assetIndex = -1;
 
-                foreach (Task task in SearchGameObject(prefab, prefab))
+                foreach (var task in SearchGameObject(prefab, prefab))
                 {
                     if (assetIndex < 0)
                     {
@@ -245,22 +245,22 @@ namespace FMODUnity
 
         private IEnumerable<string> SearchScriptableObjects(string[] guids)
         {
-            foreach (string guid in guids)
+            foreach (var guid in guids)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = AssetDatabase.GUIDToAssetPath(guid);
 
                 yield return string.Format("Searching {0}", path);
 
-                IEnumerable<ScriptableObject> scriptableObjects =
+                var scriptableObjects =
                     AssetDatabase.LoadAllAssetsAtPath(path).OfType<ScriptableObject>();
 
-                int assetIndex = -1;
+                var assetIndex = -1;
 
-                foreach (ScriptableObject scriptableObject in scriptableObjects)
+                foreach (var scriptableObject in scriptableObjects)
                 {
-                    int componentIndex = -1;
+                    var componentIndex = -1;
 
-                    foreach (Task task in GetUpdateTasks(scriptableObject))
+                    foreach (var task in GetUpdateTasks(scriptableObject))
                     {
                         if (assetIndex < 0)
                         {
@@ -287,24 +287,24 @@ namespace FMODUnity
         {
             sceneSetup = EditorSceneManager.GetSceneManagerSetup();
 
-            foreach (string guid in guids)
+            foreach (var guid in guids)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = AssetDatabase.GUIDToAssetPath(guid);
 
                 yield return string.Format("Searching {0}", path);
 
-                Scene scene = SceneManager.GetSceneByPath(path);
+                var scene = SceneManager.GetSceneByPath(path);
 
                 if (!scene.IsValid())
                 {
                     scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
                 }
 
-                int assetIndex = -1;
+                var assetIndex = -1;
 
-                foreach (GameObject gameObject in scene.GetRootGameObjects())
+                foreach (var gameObject in scene.GetRootGameObjects())
                 {
-                    foreach (Task task in SearchGameObject(gameObject, null))
+                    foreach (var task in SearchGameObject(gameObject, null))
                     {
                         if (assetIndex < 0)
                         {
@@ -328,13 +328,13 @@ namespace FMODUnity
 
         private IEnumerable<Task> SearchGameObject(GameObject gameObject, GameObject root)
         {
-            MonoBehaviour[] behaviours = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
+            var behaviours = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
 
-            foreach (MonoBehaviour behaviour in behaviours)
+            foreach (var behaviour in behaviours)
             {
-                int componentIndex = -1;
+                var componentIndex = -1;
 
-                foreach (Task task in GetUpdateTasks(behaviour))
+                foreach (var task in GetUpdateTasks(behaviour))
                 {
                     if (componentIndex < 0)
                     {
@@ -372,13 +372,13 @@ namespace FMODUnity
 
         private static IEnumerable<Task> GetEmitterUpdateTasks(StudioEventEmitter emitter)
         {
-            bool hasOwnEvent = true;
-            bool hasOwnEventReference = true;
+            var hasOwnEvent = true;
+            var hasOwnEventReference = true;
 
             if (PrefabUtility.IsPartOfPrefabInstance(emitter))
             {
-                StudioEventEmitter sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
-                PropertyModification[] modifications = PrefabUtility.GetPropertyModifications(emitter);
+                var sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
+                var modifications = PrefabUtility.GetPropertyModifications(emitter);
 
                 if (modifications != null) // GetPropertyModifications returns null if the prefab instance is disconnected
                 {
@@ -392,7 +392,7 @@ namespace FMODUnity
 
             if (hasOwnEventReference)
             {
-                Task updateTask = GetUpdateEventReferenceTask(emitter.EventReference, "EventReference");
+                var updateTask = GetUpdateEventReferenceTask(emitter.EventReference, "EventReference");
                 if (updateTask != null)
                 {
                     yield return updateTask;
@@ -431,7 +431,7 @@ namespace FMODUnity
 
             if (Settings.Instance.EventLinkage == EventLinkage.GUID)
             {
-                EditorEventRef editorEventRef = EventManager.EventFromGUID(eventReference.Guid);
+                var editorEventRef = EventManager.EventFromGUID(eventReference.Guid);
 
                 if (editorEventRef == null)
                 {
@@ -446,7 +446,7 @@ namespace FMODUnity
             }
             else if (Settings.Instance.EventLinkage == EventLinkage.Path)
             {
-                EditorEventRef editorEventRef = EventManager.EventFromPath(eventReference.Path);
+                var editorEventRef = EventManager.EventFromPath(eventReference.Path);
 
                 if (editorEventRef != null)
                 {
@@ -478,7 +478,7 @@ namespace FMODUnity
 #if UNITY_TIMELINE_EXIST
         private static IEnumerable<Task> GetPlayableUpdateTasks(FMODEventPlayable playable)
         {
-            Task updateTask = GetUpdateEventReferenceTask(playable.EventReference, "EventReference");
+            var updateTask = GetUpdateEventReferenceTask(playable.EventReference, "EventReference");
             if (updateTask != null)
             {
                 yield return updateTask;
@@ -517,14 +517,14 @@ namespace FMODUnity
 
         private static IEnumerable<Task> GetGenericUpdateTasks(object target, string subObjectPath = null, IEnumerable<object> parents = null)
         {
-            Type targetType = target.GetType();
-            FieldInfo[] fields = targetType.GetFields(DefaultBindingFlags);
+            var targetType = target.GetType();
+            var fields = targetType.GetFields(DefaultBindingFlags);
 
-            List<FieldInfo> oldFields = new List<FieldInfo>();
-            List<FieldInfo> newFields = new List<FieldInfo>();
-            List<FieldInfo> subObjectFields = new List<FieldInfo>();
+            var oldFields = new List<FieldInfo>();
+            var newFields = new List<FieldInfo>();
+            var subObjectFields = new List<FieldInfo>();
 
-            foreach (FieldInfo f in fields)
+            foreach (var f in fields)
             {
                 if (IsEventRef(f))
                 {
@@ -544,12 +544,12 @@ namespace FMODUnity
                 }
             }
 
-            int initialOldFieldCount = oldFields.Count;
+            var initialOldFieldCount = oldFields.Count;
 
             // Remove empty [EventRef] fields
-            for (int i = 0; i < oldFields.Count; )
+            for (var i = 0; i < oldFields.Count; )
             {
-                FieldInfo oldField = oldFields[i];
+                var oldField = oldFields[i];
 
                 if (string.IsNullOrEmpty(oldField.GetValue(target) as string))
                 {
@@ -565,15 +565,15 @@ namespace FMODUnity
 
             // Handle conflicts where multiple [EventRef] fields have the same migration target
 #pragma warning disable 0618 // Suppress a warning about using the obsolete EventRefAttribute class
-            IGrouping<string, FieldInfo>[] conflictingGroups = oldFields
+            var conflictingGroups = oldFields
                 .GroupBy(f => GetCustomAttribute<EventRefAttribute>(f).MigrateTo)
                 .Where(g => !string.IsNullOrEmpty(g.Key) && g.Count() > 1)
                 .ToArray();
 #pragma warning restore 0618
 
-            foreach (IGrouping<string, FieldInfo> group in conflictingGroups)
+            foreach (var group in conflictingGroups)
             {
-                foreach (FieldInfo field in group)
+                foreach (var field in group)
                 {
                     oldFields.Remove(field);
                 }
@@ -583,23 +583,23 @@ namespace FMODUnity
 
             // Handle [EventRef] fields with MigrateTo set
 #pragma warning disable 0618 // Suppress a warning about using the obsolete EventRefAttribute class
-            for (int i = 0; i < oldFields.Count; )
+            for (var i = 0; i < oldFields.Count; )
             {
-                FieldInfo oldField = oldFields[i];
+                var oldField = oldFields[i];
 
-                EventRefAttribute attribute = GetCustomAttribute<EventRefAttribute>(oldField);
+                var attribute = GetCustomAttribute<EventRefAttribute>(oldField);
 
                 if (!string.IsNullOrEmpty(attribute.MigrateTo))
                 {
                     oldFields.RemoveAt(i);
 
-                    string oldValue = oldField.GetValue(target) as string;
+                    var oldValue = oldField.GetValue(target) as string;
 
-                    FieldInfo newField = newFields.FirstOrDefault(f => f.Name == attribute.MigrateTo);
+                    var newField = newFields.FirstOrDefault(f => f.Name == attribute.MigrateTo);
 
                     if (newField != null)
                     {
-                        EventReference newValue = (EventReference)newField.GetValue(target);
+                        var newValue = (EventReference)newField.GetValue(target);
 
                         if (newValue.IsNull)
                         {
@@ -628,13 +628,13 @@ namespace FMODUnity
             // and there is a single new field
             if (initialOldFieldCount == 1 && oldFields.Count == 1 && newFields.Count == 1)
             {
-                FieldInfo oldField = oldFields[0];
+                var oldField = oldFields[0];
 
-                string oldValue = oldField.GetValue(target) as string;
+                var oldValue = oldField.GetValue(target) as string;
 
-                FieldInfo newField = newFields[0];
+                var newField = newFields[0];
 
-                EventReference newValue = (EventReference)newField.GetValue(target);
+                var newValue = (EventReference)newField.GetValue(target);
 
                 if (newValue.IsNull)
                 {
@@ -650,18 +650,18 @@ namespace FMODUnity
             }
 
             // Handle old fields with no migration target
-            foreach (FieldInfo oldField in oldFields)
+            foreach (var oldField in oldFields)
             {
                 yield return Task.AddMigrationTarget(subObjectPath, oldField.GetValue(target) as string, oldField.Name,
                     targetType.Name);
             }
 
             // Check new fields for GUID/path mismatches
-            foreach (FieldInfo newField in newFields)
+            foreach (var newField in newFields)
             {
-                EventReference eventReference = (EventReference)newField.GetValue(target);
+                var eventReference = (EventReference)newField.GetValue(target);
 
-                Task updateTask = GetUpdateEventReferenceTask(eventReference, newField.Name, subObjectPath);
+                var updateTask = GetUpdateEventReferenceTask(eventReference, newField.Name, subObjectPath);
                 if (updateTask != null)
                 {
                     yield return updateTask;
@@ -678,18 +678,18 @@ namespace FMODUnity
 
                 parents = parents.Append(target);
 
-                foreach (FieldInfo subObjectField in subObjectFields)
+                foreach (var subObjectField in subObjectFields)
                 {
-                    object value = subObjectField.GetValue(target);
+                    var value = subObjectField.GetValue(target);
 
                     if (value != null && !parents.Contains(value))
                     {
                         if (value is System.Collections.IEnumerable)
                         {
-                            int index = 0;
-                            foreach (object item in value as System.Collections.IEnumerable)
+                            var index = 0;
+                            foreach (var item in value as System.Collections.IEnumerable)
                             {
-                                foreach (Task t in GetGenericUpdateTasks(item, FieldPath(subObjectPath, subObjectField.Name, index), parents))
+                                foreach (var t in GetGenericUpdateTasks(item, FieldPath(subObjectPath, subObjectField.Name, index), parents))
                                 {
                                     yield return t;
                                 }
@@ -698,7 +698,7 @@ namespace FMODUnity
                         }
                         else
                         {
-                            foreach (Task t in GetGenericUpdateTasks(value, FieldPath(subObjectPath, subObjectField.Name), parents))
+                            foreach (var t in GetGenericUpdateTasks(value, FieldPath(subObjectPath, subObjectField.Name), parents))
                             {
                                 yield return t;
                             }
@@ -712,7 +712,7 @@ namespace FMODUnity
         {
             sceneSetup = EditorSceneManager.GetSceneManagerSetup();
 
-            foreach (Task task in tasks)
+            foreach (var task in tasks)
             {
                 yield return string.Format("Executing: {0}", task);
 
@@ -746,7 +746,7 @@ namespace FMODUnity
 
         private static AssetType GetAssetType(GameObject gameObject)
         {
-            PrefabAssetType prefabType = PrefabUtility.GetPrefabAssetType(gameObject);
+            var prefabType = PrefabUtility.GetPrefabAssetType(gameObject);
 
             if (prefabType == PrefabAssetType.Model)
             {
@@ -989,11 +989,11 @@ namespace FMODUnity
                         return string.Format("Clear <b>'{0}'</b> from the <b>{1}</b> field", data[0], EmitterEventField);
                     },
                     IsValid: (data, target) => {
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
                         return emitter != null && emitter.Event == data[0] && !emitter.EventReference.IsNull;
                     },
                     Execute: (data, target) => {
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
 
                         emitter.Event = string.Empty;
                         EditorUtility.SetDirty(emitter);
@@ -1005,16 +1005,16 @@ namespace FMODUnity
                             data[0], EmitterEventField, EmitterEventReferenceField);
                     },
                     IsValid: (data, target) => {
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
                         return emitter != null && emitter.Event == data[0] && emitter.EventReference.IsNull;
                     },
                     Execute: (data, target) => {
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
 
                         emitter.EventReference.Path = emitter.Event;
                         emitter.Event = string.Empty;
 
-                        EditorEventRef eventRef = EventManager.EventFromPath(emitter.EventReference.Path);
+                        var eventRef = EventManager.EventFromPath(emitter.EventReference.Path);
 
                         if (eventRef != null)
                         {
@@ -1035,22 +1035,22 @@ namespace FMODUnity
                             return false;
                         }
 
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
 
                         if (emitter == null)
                         {
                             return false;
                         }
 
-                        StudioEventEmitter sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
+                        var sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
 
                         if (sourceEmitter == null)
                         {
                             return false;
                         }
 
-                        PropertyModification[] modifications = PrefabUtility.GetPropertyModifications(emitter);
-                        PropertyModification eventOverride = modifications.FirstOrDefault(
+                        var modifications = PrefabUtility.GetPropertyModifications(emitter);
+                        var eventOverride = modifications.FirstOrDefault(
                             m => m.target == sourceEmitter && m.propertyPath == "Event");
 
                         if (eventOverride == null || eventOverride.value != data[0])
@@ -1058,7 +1058,7 @@ namespace FMODUnity
                             return false;
                         }
 
-                        bool hasEventReferenceOverride = modifications.Any(
+                        var hasEventReferenceOverride = modifications.Any(
                             m => m.target == sourceEmitter && m.propertyPath.StartsWith("EventReference"));
 
                         if (hasEventReferenceOverride)
@@ -1069,13 +1069,13 @@ namespace FMODUnity
                         return true;
                     },
                     Execute: (data, target) => {
-                        StudioEventEmitter emitter = target as StudioEventEmitter;
+                        var emitter = target as StudioEventEmitter;
 
-                        string path = emitter.Event;
+                        var path = emitter.Event;
 
                         // Clear the Event override
-                        StudioEventEmitter sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
-                        PropertyModification[] modifications = PrefabUtility.GetPropertyModifications(emitter);
+                        var sourceEmitter = PrefabUtility.GetCorrespondingObjectFromSource(emitter);
+                        var modifications = PrefabUtility.GetPropertyModifications(emitter);
 
                         modifications = modifications
                             .Where(m => !(m.target == sourceEmitter && m.propertyPath == "Event"))
@@ -1086,7 +1086,7 @@ namespace FMODUnity
                         // Set the EventReference override
                         emitter.EventReference.Path = path;
 
-                        EditorEventRef eventRef = EventManager.EventFromPath(path);
+                        var eventRef = EventManager.EventFromPath(path);
 
                         if (eventRef != null)
                         {
@@ -1103,11 +1103,11 @@ namespace FMODUnity
                         return string.Format("Clear <b>'{0}'</b> from the <b>{1}</b> field", data[0], PlayableEventNameField);
                     },
                     IsValid: (data, target) => {
-                        FMODEventPlayable playable = target as FMODEventPlayable;
+                        var playable = target as FMODEventPlayable;
                         return playable != null && playable.eventName == data[0] && !playable.EventReference.IsNull;
                     },
                     Execute: (data, target) => {
-                        FMODEventPlayable playable = target as FMODEventPlayable;
+                        var playable = target as FMODEventPlayable;
 
                         playable.eventName = string.Empty;
                         EditorUtility.SetDirty(playable);
@@ -1119,16 +1119,16 @@ namespace FMODUnity
                             data[0], PlayableEventNameField, PlayableEventReferenceField);
                     },
                     IsValid: (data, target) => {
-                        FMODEventPlayable playable = target as FMODEventPlayable;
+                        var playable = target as FMODEventPlayable;
                         return playable != null && playable.eventName == data[0] && playable.EventReference.IsNull;
                     },
                     Execute: (data, target) => {
-                        FMODEventPlayable playable = target as FMODEventPlayable;
+                        var playable = target as FMODEventPlayable;
 
                         playable.EventReference.Path = playable.eventName;
                         playable.eventName = string.Empty;
 
-                        EditorEventRef eventRef = EventManager.EventFromPath(playable.EventReference.Path);
+                        var eventRef = EventManager.EventFromPath(playable.EventReference.Path);
 
                         if (eventRef != null)
                         {
@@ -1144,12 +1144,12 @@ namespace FMODUnity
                         return string.Format("Remove field <b>{0}</b>", FieldPath(data[0], data[2]));
                     },
                     ManualInstructions: (data, component) => {
-                        string subObjectPath = data[0];
-                        string value = data[1];
-                        string fieldName = data[2];
-                        string targetType = data[3];
+                        var subObjectPath = data[0];
+                        var value = data[1];
+                        var fieldName = data[2];
+                        var targetType = data[3];
 
-                        string fieldPath = FieldPath(subObjectPath, fieldName);
+                        var fieldPath = FieldPath(subObjectPath, fieldName);
 
                         return string.Format(
                             "The {0} field on component {1} has value '{2}', " +
@@ -1159,10 +1159,10 @@ namespace FMODUnity
                             fieldPath, component.Type, value, targetType, fieldName);
                     },
                     IsValid: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[2]);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[2]);
 
                         return field != null && IsEventRef(field) && (field.GetValue(target) as string) == data[1];
                     },
@@ -1173,11 +1173,11 @@ namespace FMODUnity
                         return string.Format("Remove empty field <b>{0}</b>", FieldPath(data[0], data[1]));
                     },
                     ManualInstructions: (data, component) => {
-                        string subObjectPath = data[0];
-                        string fieldName = data[1];
-                        string targetType = data[2];
+                        var subObjectPath = data[0];
+                        var fieldName = data[1];
+                        var targetType = data[2];
 
-                        string fieldPath = FieldPath(subObjectPath, fieldName);
+                        var fieldPath = FieldPath(subObjectPath, fieldName);
 
                         return string.Format(
                             "The {0} field on component {1} is empty.\n" +
@@ -1186,10 +1186,10 @@ namespace FMODUnity
                             fieldPath, component.Type, targetType, fieldName);
                     },
                     IsValid: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[1]);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[1]);
 
                         return field != null && IsEventRef(field)
                             && string.IsNullOrEmpty(field.GetValue(target) as string);
@@ -1198,25 +1198,25 @@ namespace FMODUnity
                 );
                 Implement(Type.GenericMoveEventRefFieldToEventReferenceField,
                     Description: (data) => {
-                        string subObjectPath = data[0];
-                        string value = data[1];
-                        string oldFieldPath = FieldPath(subObjectPath, data[2]);
-                        string newFieldPath = FieldPath(subObjectPath, data[3]);
+                        var subObjectPath = data[0];
+                        var value = data[1];
+                        var oldFieldPath = FieldPath(subObjectPath, data[2]);
+                        var newFieldPath = FieldPath(subObjectPath, data[3]);
 
                         return string.Format("Move <b>'{0}'</b> from <b>{1}</b> to <b>{2}</b>",
                             value, oldFieldPath, newFieldPath);
                     },
                     IsValid: (data, rootObject) => {
-                        string subObjectPath = data[0];
-                        string value = data[1];
-                        string oldFieldName = data[2];
-                        string newFieldName = data[3];
+                        var subObjectPath = data[0];
+                        var value = data[1];
+                        var oldFieldName = data[2];
+                        var newFieldName = data[3];
 
-                        object target = FindSubObject(rootObject, subObjectPath);
-                        System.Type targetType = target.GetType();
+                        var target = FindSubObject(rootObject, subObjectPath);
+                        var targetType = target.GetType();
 
-                        FieldInfo oldField = targetType.GetField(oldFieldName, DefaultBindingFlags);
-                        FieldInfo newField = targetType.GetField(newFieldName, DefaultBindingFlags);
+                        var oldField = targetType.GetField(oldFieldName, DefaultBindingFlags);
+                        var newField = targetType.GetField(newFieldName, DefaultBindingFlags);
 
                         if (oldField == null || newField == null
                             || !IsEventRef(oldField)
@@ -1225,26 +1225,26 @@ namespace FMODUnity
                             return false;
                         }
 
-                        string oldValue = oldField.GetValue(target) as string;
-                        EventReference newValue = (EventReference)newField.GetValue(target);
+                        var oldValue = oldField.GetValue(target) as string;
+                        var newValue = (EventReference)newField.GetValue(target);
 
                         return oldValue == value && newValue.IsNull;
                     },
                     Execute: (data, rootObject) => {
-                        string subObjectPath = data[0];
-                        string path = data[1];
-                        string oldFieldName = data[2];
-                        string newFieldName = data[3];
+                        var subObjectPath = data[0];
+                        var path = data[1];
+                        var oldFieldName = data[2];
+                        var newFieldName = data[3];
 
-                        object target = FindSubObject(rootObject, subObjectPath);
-                        System.Type type = target.GetType();
+                        var target = FindSubObject(rootObject, subObjectPath);
+                        var type = target.GetType();
 
-                        FieldInfo oldField = type.GetField(oldFieldName, DefaultBindingFlags);
-                        FieldInfo newField = type.GetField(newFieldName, DefaultBindingFlags);
+                        var oldField = type.GetField(oldFieldName, DefaultBindingFlags);
+                        var newField = type.GetField(newFieldName, DefaultBindingFlags);
 
-                        EventReference eventReference = new EventReference() { Path = path };
+                        var eventReference = new EventReference() { Path = path };
 
-                        EditorEventRef eventRef = EventManager.EventFromPath(path);
+                        var eventRef = EventManager.EventFromPath(path);
 
                         if (eventRef != null)
                         {
@@ -1259,9 +1259,9 @@ namespace FMODUnity
                 );
                 Implement(Type.GenericAddMigrationTarget,
                     Description: (data) => {
-                        string value = data[1];
-                        string fieldPath = FieldPath(data[0], data[2]);
-                        string targetName = data[4];
+                        var value = data[1];
+                        var fieldPath = FieldPath(data[0], data[2]);
+                        var targetName = data[4];
 
                         if (!string.IsNullOrEmpty(targetName))
                         {
@@ -1276,10 +1276,10 @@ namespace FMODUnity
                         }
                     },
                     ManualInstructions: (data, component) => {
-                        string fieldName = data[2];
-                        string targetType = data[3];
-                        string targetName = data[4];
-                        string fieldPath = FieldPath(data[0], fieldName);
+                        var fieldName = data[2];
+                        var targetType = data[3];
+                        var targetName = data[4];
+                        var fieldPath = FieldPath(data[0], fieldName);
 
                         string script;
 
@@ -1316,13 +1316,13 @@ namespace FMODUnity
                         }
                     },
                     IsValid: (data, rootObject) => {
-                        string value = data[1];
-                        string oldFieldName = data[2];
+                        var value = data[1];
+                        var oldFieldName = data[2];
 
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo oldField = targetType.GetField(oldFieldName, DefaultBindingFlags);
+                        var targetType = target.GetType();
+                        var oldField = targetType.GetField(oldFieldName, DefaultBindingFlags);
 
                         return oldField != null && IsEventRef(oldField)
                             && (oldField.GetValue(target) as string) == value;
@@ -1337,27 +1337,27 @@ namespace FMODUnity
                             FieldPath(data[0], data[1]), data[2], data[3], data[4]);
                     },
                     IsValid: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[1], DefaultBindingFlags);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[1], DefaultBindingFlags);
 
                         if (field == null || field.FieldType != typeof(EventReference))
                         {
                             return false;
                         }
 
-                        EventReference value = (EventReference)field.GetValue(target);
+                        var value = (EventReference)field.GetValue(target);
 
                         return value.Path == data[2] && value.Guid.ToString() == data[4];
                     },
                     Execute: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[1], DefaultBindingFlags);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[1], DefaultBindingFlags);
 
-                        EventReference value = (EventReference)field.GetValue(target);
+                        var value = (EventReference)field.GetValue(target);
                         value.Path = data[3];
 
                         field.SetValue(target, value);
@@ -1373,27 +1373,27 @@ namespace FMODUnity
                             FieldPath(data[0], data[1]), data[2], data[3], data[4]);
                     },
                     IsValid: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[1], DefaultBindingFlags);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[1], DefaultBindingFlags);
 
                         if (field == null || field.FieldType != typeof(EventReference))
                         {
                             return false;
                         }
 
-                        EventReference value = (EventReference)field.GetValue(target);
+                        var value = (EventReference)field.GetValue(target);
 
                         return value.Guid.ToString() == data[2] && value.Path == data[4];
                     },
                     Execute: (data, rootObject) => {
-                        object target = FindSubObject(rootObject, data[0]);
+                        var target = FindSubObject(rootObject, data[0]);
 
-                        System.Type targetType = target.GetType();
-                        FieldInfo field = targetType.GetField(data[1], DefaultBindingFlags);
+                        var targetType = target.GetType();
+                        var field = targetType.GetField(data[1], DefaultBindingFlags);
 
-                        EventReference value = (EventReference)field.GetValue(target);
+                        var value = (EventReference)field.GetValue(target);
                         value.Guid = FMOD.GUID.Parse(data[3]);
 
                         field.SetValue(target, value);
@@ -1403,8 +1403,8 @@ namespace FMODUnity
                 );
                 Implement(Type.GenericFixMigrationTargetConflict,
                     Description: (data) => {
-                        string subObjectPath = data[0];
-                        IEnumerable<string> fieldPaths = data.Skip(2).Select(field => FieldPath(subObjectPath, field));
+                        var subObjectPath = data[0];
+                        var fieldPaths = data.Skip(2).Select(field => FieldPath(subObjectPath, field));
 
                         return string.Format("Fix conflicting migration targets on fields <b>{0}</b>",
                             EditorUtils.SeriesString("</b>, <b>", "</b> and <b>", fieldPaths));
@@ -1438,7 +1438,7 @@ namespace FMODUnity
 
             public string ManualInstructions(Component component)
             {
-                Delegates delegates = GetDelegates();
+                var delegates = GetDelegates();
 
                 if (delegates.ManualInstructions != null)
                 {
@@ -1469,7 +1469,7 @@ namespace FMODUnity
             {
                 if (IsValid(target))
                 {
-                    Delegates delegates = GetDelegates();
+                    var delegates = GetDelegates();
 
                     if (delegates.Execute != null)
                     {
@@ -1517,16 +1517,16 @@ namespace FMODUnity
                 return o;
             }
 
-            object result = o;
+            var result = o;
 
-            foreach (string pathElement in path.Split('.'))
+            foreach (var pathElement in path.Split('.'))
             {
-                Type type = result.GetType();
+                var type = result.GetType();
 
-                Regex regex = new Regex(@"(\w+)\[(\d+)\]$");
-                Match match = regex.Match(pathElement);
-                int index = -1;
-                string fieldName = pathElement;
+                var regex = new Regex(@"(\w+)\[(\d+)\]$");
+                var match = regex.Match(pathElement);
+                var index = -1;
+                var fieldName = pathElement;
 
                 if (match.Success)
                 {
@@ -1534,7 +1534,7 @@ namespace FMODUnity
                     index = int.Parse(match.Groups[2].Value);
                 }
 
-                FieldInfo field = type.GetField(fieldName, DefaultBindingFlags);
+                var field = type.GetField(fieldName, DefaultBindingFlags);
 
                 if (field == null)
                 {
@@ -1545,15 +1545,15 @@ namespace FMODUnity
 
                 if (index >= 0)
                 {
-                    System.Collections.IEnumerable enumerable = result as System.Collections.IEnumerable;
+                    var enumerable = result as System.Collections.IEnumerable;
 
                     result = null;
 
                     if (enumerable != null)
                     {
-                        int i = 0;
+                        var i = 0;
 
-                        foreach (object obj in enumerable)
+                        foreach (var obj in enumerable)
                         {
                             if (index == i)
                             {
@@ -1576,7 +1576,7 @@ namespace FMODUnity
 
         private void ExecuteTask(Task task, SavePolicy savePolicy)
         {
-            Asset asset = assets[task.AssetIndex];
+            var asset = assets[task.AssetIndex];
 
             if (asset.Type == AssetType.ScriptableObject)
             {
@@ -1590,13 +1590,13 @@ namespace FMODUnity
 
         private void ExecuteScriptableObjectTask(Task task, SavePolicy savePolicy)
         {
-            Asset asset = assets[task.AssetIndex];
-            Component component = components[task.ComponentIndex];
+            var asset = assets[task.AssetIndex];
+            var component = components[task.ComponentIndex];
 
-            IEnumerable<ScriptableObject> scriptableObjects =
+            var scriptableObjects =
                 AssetDatabase.LoadAllAssetsAtPath(asset.Path).OfType<ScriptableObject>();
 
-            foreach (ScriptableObject scriptableObject in scriptableObjects)
+            foreach (var scriptableObject in scriptableObjects)
             {
                 if (scriptableObject.GetType().Name == component.Type)
                 {
@@ -1610,7 +1610,7 @@ namespace FMODUnity
 
         private void ExecuteGameObjectTask(Task task, SavePolicy savePolicy)
         {
-            GameObject gameObject = LoadTargetGameObject(task, savePolicy);
+            var gameObject = LoadTargetGameObject(task, savePolicy);
 
             if (gameObject == null)
             {
@@ -1620,9 +1620,9 @@ namespace FMODUnity
             Selection.activeGameObject = gameObject;
             EditorGUIUtility.PingObject(gameObject);
 
-            Component component = components[task.ComponentIndex];
+            var component = components[task.ComponentIndex];
 
-            foreach (MonoBehaviour behaviour in gameObject.GetComponents<MonoBehaviour>())
+            foreach (var behaviour in gameObject.GetComponents<MonoBehaviour>())
             {
                 if (behaviour.GetType().Name == component.Type)
                 {
@@ -1642,12 +1642,12 @@ namespace FMODUnity
 
         private GameObject LoadTargetGameObject(Task task, SavePolicy savePolicy)
         {
-            Asset asset = assets[task.AssetIndex];
-            Component component = components[task.ComponentIndex];
+            var asset = assets[task.AssetIndex];
+            var component = components[task.ComponentIndex];
 
             if (IsPrefab(asset.Type))
             {
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
 
                 if (prefab == null)
                 {
@@ -1663,7 +1663,7 @@ namespace FMODUnity
             }
             else if (asset.Type == AssetType.Scene)
             {
-                Scene scene = SceneManager.GetSceneByPath(asset.Path);
+                var scene = SceneManager.GetSceneByPath(asset.Path);
 
                 if (!scene.IsValid())
                 {
@@ -1701,7 +1701,7 @@ namespace FMODUnity
 
         private int AddAsset(AssetType type, string path)
         {
-            Asset asset = new Asset() {
+            var asset = new Asset() {
                 Type = type,
                 Path = path,
             };
@@ -1713,9 +1713,9 @@ namespace FMODUnity
 
         private int AddComponent(MonoBehaviour behaviour, GameObject root)
         {
-            MonoScript script = MonoScript.FromMonoBehaviour(behaviour);
+            var script = MonoScript.FromMonoBehaviour(behaviour);
 
-            Component component = new Component() {
+            var component = new Component() {
                 GameObjectID = GlobalObjectId.GetGlobalObjectIdSlow(behaviour.gameObject),
                 Type = behaviour.GetType().Name,
                 Path = EditorUtils.GameObjectPath(behaviour, root),
@@ -1729,9 +1729,9 @@ namespace FMODUnity
 
         private int AddComponent(ScriptableObject scriptableObject)
         {
-            MonoScript script = MonoScript.FromScriptableObject(scriptableObject);
+            var script = MonoScript.FromScriptableObject(scriptableObject);
 
-            Component component = new Component() {
+            var component = new Component() {
                 Type = scriptableObject.GetType().Name,
                 ScriptPath = AssetDatabase.GetAssetPath(script),
             };
@@ -1795,11 +1795,11 @@ namespace FMODUnity
 
         private void OnTaskDoubleClicked(Task task)
         {
-            Asset asset = assets[task.AssetIndex];
+            var asset = assets[task.AssetIndex];
 
             if (asset.Type == AssetType.ScriptableObject)
             {
-                UnityEngine.Object target = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(asset.Path);
+                var target = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(asset.Path);
 
                 if (target == null)
                 {
@@ -1811,12 +1811,12 @@ namespace FMODUnity
                     return;
                 }
 
-                Component component = components[task.ComponentIndex];
+                var component = components[task.ComponentIndex];
 
-                IEnumerable<ScriptableObject> scriptableObjects =
+                var scriptableObjects =
                     AssetDatabase.LoadAllAssetsAtPath(asset.Path).OfType<ScriptableObject>();
 
-                foreach (ScriptableObject scriptableObject in scriptableObjects)
+                foreach (var scriptableObject in scriptableObjects)
                 {
                     if (scriptableObject.GetType().Name == component.Type
                         && task.IsValid(scriptableObject))
@@ -1827,7 +1827,7 @@ namespace FMODUnity
             }
             else
             {
-                GameObject gameObject = LoadTargetGameObject(task, SavePolicy.AskToSave);
+                var gameObject = LoadTargetGameObject(task, SavePolicy.AskToSave);
 
                 if (gameObject == null)
                 {
@@ -1847,7 +1847,7 @@ namespace FMODUnity
 
         private void UpdateAssetEnableState(int assetIndex)
         {
-            Asset asset = assets[assetIndex];
+            var asset = assets[assetIndex];
 
             asset.EnableState = tasks
                 .Where(t => t.AssetIndex == assetIndex)
@@ -1857,9 +1857,9 @@ namespace FMODUnity
 
         private void ApplyAssetEnableStateToTasks(Asset asset)
         {
-            int assetIndex = assets.IndexOf(asset);
+            var assetIndex = assets.IndexOf(asset);
 
-            foreach (Task task in tasks.Where(t => t.AssetIndex == assetIndex))
+            foreach (var task in tasks.Where(t => t.AssetIndex == assetIndex))
             {
                 task.Enabled = (asset.EnableState == EnableState.Enabled);
             }
@@ -1959,7 +1959,7 @@ namespace FMODUnity
         {
             Styles.Affirm();
 
-            float buttonHeight = EditorGUIUtility.singleLineHeight * 2;
+            var buttonHeight = EditorGUIUtility.singleLineHeight * 2;
 
             // Task List
             using (var scope = new EditorGUILayout.VerticalScope(GUILayout.ExpandHeight(true)))
@@ -1970,8 +1970,8 @@ namespace FMODUnity
             // Selected Task
             if (selectedTask != null)
             {
-                Asset asset = assets[selectedTask.AssetIndex];
-                Component component = components[selectedTask.ComponentIndex];
+                var asset = assets[selectedTask.AssetIndex];
+                var component = components[selectedTask.ComponentIndex];
 
                 DrawSelectableLabel(selectedTask.PlainDescription(), EditorStyles.wordWrappedLabel);
 
@@ -1989,23 +1989,23 @@ namespace FMODUnity
 
                     if (selectedTask.IsManual())
                     {
-                        Rect buttonsRect = EditorGUILayout.GetControlRect(false, buttonHeight);
+                        var buttonsRect = EditorGUILayout.GetControlRect(false, buttonHeight);
                         buttonsRect = EditorGUI.IndentedRect(buttonsRect);
 
-                        GUIContent openScriptContent = new GUIContent("Open " + component.ScriptPath);
+                        var openScriptContent = new GUIContent("Open " + component.ScriptPath);
 
-                        Rect openScriptRect = buttonsRect;
+                        var openScriptRect = buttonsRect;
                         openScriptRect.width = GUI.skin.button.CalcSize(openScriptContent).x;
 
                         if (GUI.Button(openScriptRect, openScriptContent))
                         {
-                            MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(component.ScriptPath);
+                            var script = AssetDatabase.LoadAssetAtPath<MonoScript>(component.ScriptPath);
                             AssetDatabase.OpenAsset(script);
                         }
 
-                        GUIContent viewDocumentationContent = new GUIContent("View Documentation");
+                        var viewDocumentationContent = new GUIContent("View Documentation");
 
-                        Rect viewDocumentationRect = buttonsRect;
+                        var viewDocumentationRect = buttonsRect;
                         viewDocumentationRect.x = openScriptRect.xMax + GUI.skin.button.margin.left;
                         viewDocumentationRect.width = GUI.skin.button.CalcSize(viewDocumentationContent).x;
 
@@ -2023,9 +2023,9 @@ namespace FMODUnity
                     }
                     else
                     {
-                        GUIContent buttonContent = new GUIContent("Execute");
+                        var buttonContent = new GUIContent("Execute");
 
-                        Rect buttonRect = EditorGUILayout.GetControlRect(false, buttonHeight);
+                        var buttonRect = EditorGUILayout.GetControlRect(false, buttonHeight);
                         buttonRect.width = EditorGUIUtility.labelWidth;
                         buttonRect = EditorGUI.IndentedRect(buttonRect);
 
@@ -2083,13 +2083,13 @@ namespace FMODUnity
 
         private static void DrawProgressBar(string label, SearchProgress progress)
         {
-            Rect rect = EditorGUILayout.GetControlRect();
+            var rect = EditorGUILayout.GetControlRect();
             EditorGUI.ProgressBar(rect, progress.Fraction(), label);
         }
 
         private static void DrawSelectableLabel(string text, GUIStyle style)
         {
-            float height = style.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth);
+            var height = style.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth);
 
             EditorGUILayout.SelectableLabel(text, style, GUILayout.Height(height));
         }
@@ -2125,7 +2125,7 @@ namespace FMODUnity
 
             public static MultiColumnHeaderState CreateHeaderState()
             {
-                MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[] {
+                var columns = new MultiColumnHeaderState.Column[] {
                     new MultiColumnHeaderState.Column()
                     {
                         headerContent = new GUIContent("Target"),
@@ -2179,17 +2179,17 @@ namespace FMODUnity
 
             protected override TreeViewItem BuildRoot()
             {
-                TreeViewItem root = new TreeViewItem(-1, -1);
+                var root = new TreeViewItem(-1, -1);
 
                 if (tasks.Count > 0)
                 {
-                    int index = 0;
+                    var index = 0;
 
                     AssetItem assetItem = null;
 
-                    foreach (Task task in tasks)
+                    foreach (var task in tasks)
                     {
-                        Asset asset = assets[task.AssetIndex];
+                        var asset = assets[task.AssetIndex];
 
                         if (assetItem == null || assetItem.asset != asset)
                         {
@@ -2213,7 +2213,7 @@ namespace FMODUnity
                 }
                 else
                 {
-                    TreeViewItem item = new TreeViewItem(0);
+                    var item = new TreeViewItem(0);
                     item.displayName = "No tasks.";
 
                     root.AddChild(item);
@@ -2237,7 +2237,7 @@ namespace FMODUnity
                 {
                     if (selectedIds.Count > 0)
                     {
-                        TaskItem item = FindItem(selectedIds[0], rootItem) as TaskItem;
+                        var item = FindItem(selectedIds[0], rootItem) as TaskItem;
 
                         if (item != null)
                         {
@@ -2252,7 +2252,7 @@ namespace FMODUnity
 
             protected override void SingleClickedItem(int id)
             {
-                TreeViewItem item = FindItem(id, rootItem);
+                var item = FindItem(id, rootItem);
 
                 if (!(item is TaskItem))
                 {
@@ -2268,7 +2268,7 @@ namespace FMODUnity
             {
                 if (taskDoubleClicked != null)
                 {
-                    TaskItem item = FindItem(id, rootItem) as TaskItem;
+                    var item = FindItem(id, rootItem) as TaskItem;
 
                     if (item == null)
                     {
@@ -2281,21 +2281,21 @@ namespace FMODUnity
 
             protected override void RowGUI(RowGUIArgs args)
             {
-                TreeViewItem item = args.item;
+                var item = args.item;
 
                 if (item is TaskItem)
                 {
-                    Task task = (item as TaskItem).task;
+                    var task = (item as TaskItem).task;
 
-                    Rect toggleRect = args.rowRect;
+                    var toggleRect = args.rowRect;
                     toggleRect.x = GetContentIndent(item);
                     toggleRect.width = ToggleWidth();
 
                     TaskToggle(toggleRect, task);
 
-                    for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
+                    for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
                     {
-                        Rect rect = args.GetCellRect(i);
+                        var rect = args.GetCellRect(i);
 
                         if (i == 0)
                         {
@@ -2309,7 +2309,7 @@ namespace FMODUnity
                 {
                     base.RowGUI(args);
 
-                    Rect rect = args.rowRect;
+                    var rect = args.rowRect;
                     rect.x = GetContentIndent(item);
                     rect.width = ToggleWidth();
 
@@ -2332,7 +2332,7 @@ namespace FMODUnity
                 {
                     EditorGUI.showMixedValue = (asset.EnableState == EnableState.Mixed);
 
-                    bool enabled = EditorGUI.Toggle(rect, asset.EnableState == EnableState.Enabled);
+                    var enabled = EditorGUI.Toggle(rect, asset.EnableState == EnableState.Enabled);
 
                     EditorGUI.showMixedValue = false;
 
@@ -2366,31 +2366,31 @@ namespace FMODUnity
 
             private void CellGUI(Rect rect, Task task, int columnIndex, bool selected, bool focused)
             {
-                Component component = components[task.ComponentIndex];
+                var component = components[task.ComponentIndex];
 
                 switch ((Column)columnIndex)
                 {
                     case Column.Asset:
                         if (Event.current.type == EventType.Repaint)
                         {
-                            Texture2D typeIcon = Icons.GetComponentIcon(components[task.ComponentIndex]);
+                            var typeIcon = Icons.GetComponentIcon(components[task.ComponentIndex]);
 
                             using (new GUI.GroupScope(rect))
                             {
-                                Rect iconRect = new Rect(0, 0, rect.height, rect.height);
+                                var iconRect = new Rect(0, 0, rect.height, rect.height);
 
                                 GUI.DrawTexture(iconRect, typeIcon, ScaleMode.ScaleToFit);
 
-                                GUIContent type = new GUIContent(component.Type);
+                                var type = new GUIContent(component.Type);
 
-                                bool hasGameObjectPath = !string.IsNullOrEmpty(component.Path);
+                                var hasGameObjectPath = !string.IsNullOrEmpty(component.Path);
 
                                 if (hasGameObjectPath)
                                 {
                                     type.text += " on";
                                 }
 
-                                Rect typeRect = new Rect(iconRect.xMax, 0,
+                                var typeRect = new Rect(iconRect.xMax, 0,
                                     DefaultStyles.label.CalcSize(type).x, rect.height);
 
                                 DefaultGUI.Label(typeRect, type.text, selected, focused);
@@ -2401,9 +2401,9 @@ namespace FMODUnity
 
                                     GUI.DrawTexture(iconRect, Icons.GameObject, ScaleMode.ScaleToFit);
 
-                                    GUIContent gameObject = new GUIContent(component.Path);
+                                    var gameObject = new GUIContent(component.Path);
 
-                                    Rect gameObjectRect = new Rect(iconRect.xMax, 0,
+                                    var gameObjectRect = new Rect(iconRect.xMax, 0,
                                         DefaultStyles.label.CalcSize(gameObject).x, rect.height);
 
                                     DefaultGUI.Label(gameObjectRect, gameObject.text, selected, focused);
@@ -2415,7 +2415,7 @@ namespace FMODUnity
                     case Column.Task:
                         if (Event.current.type == EventType.Repaint)
                         {
-                            string text = task.ToString();
+                            var text = task.ToString();
 
                             if (task.IsManual())
                             {

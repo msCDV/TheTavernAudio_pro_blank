@@ -1,24 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using FMOD.Studio;
-using FMODUnity;
 
-public class Health_new : MonoBehaviour
+public class HealthNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
     private void Start()
     {
-        audioSystem = GetComponent<AudioSystem>();
+        _audioSystem = GetComponent<AudioSystem>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            audioSystem.HealthSnap();
+            _audioSystem.HealthSnap();
         }
     }
 }

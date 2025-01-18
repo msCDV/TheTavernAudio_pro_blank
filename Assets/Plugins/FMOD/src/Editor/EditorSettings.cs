@@ -60,9 +60,9 @@ namespace FMODUnity
 
         public void CreateSettingsAsset(string assetName)
         {
-            string resourcesPath = $"{FMODFolderFull}/Resources";
+            var resourcesPath = $"{FMODFolderFull}/Resources";
 
-            bool inPackagesFolder = resourcesPath.StartsWith("Packages/");
+            var inPackagesFolder = resourcesPath.StartsWith("Packages/");
             if (inPackagesFolder)
             {
                 resourcesPath = "Assets/Plugins/FMOD/Resources";
@@ -75,7 +75,7 @@ namespace FMODUnity
 
         public void AddPlatformForBuildTargets(Platform platform)
         {
-            foreach (BuildTarget buildTarget in platform.GetBuildTargets())
+            foreach (var buildTarget in platform.GetBuildTargets())
             {
                 if (buildTarget != BuildTarget.NoTarget)
                 {
@@ -94,7 +94,7 @@ namespace FMODUnity
         // Adds a new platform group to the set of platforms.
         public PlatformGroup AddPlatformGroup(string displayName, int sortOrder)
         {
-            PlatformGroup group = PlatformGroup.Create(displayName, Legacy.Platform.None);
+            var group = PlatformGroup.Create(displayName, Legacy.Platform.None);
             group.DisplaySortOrder = sortOrder;
 
             RuntimeSettings.AddPlatform(group);
@@ -112,7 +112,7 @@ namespace FMODUnity
 
             RuntimeSettings.Platforms.ForEach(RemovePlatformFromAsset);
 
-            foreach (Platform platform in Resources.LoadAll<Platform>(Settings.SettingsAssetName))
+            foreach (var platform in Resources.LoadAll<Platform>(Settings.SettingsAssetName))
             {
                 RemovePlatformFromAsset(platform);
             }
@@ -155,7 +155,7 @@ namespace FMODUnity
         {
             var newPlatforms = new List<Platform>();
 
-            foreach (Settings.PlatformTemplate template in Settings.PlatformTemplates)
+            foreach (var template in Settings.PlatformTemplates)
             {
                 if (!RuntimeSettings.PlatformExists(template.Identifier))
                 {
@@ -202,7 +202,7 @@ namespace FMODUnity
             // Create a map for migrating legacy settings
             var platformMap = new Dictionary<Legacy.Platform, Platform>();
 
-            foreach (Platform platform in RuntimeSettings.Platforms.Concat(newPlatforms))
+            foreach (var platform in RuntimeSettings.Platforms.Concat(newPlatforms))
             {
                 if (platform.LegacyIdentifier != Legacy.Platform.None)
                 {
@@ -215,7 +215,7 @@ namespace FMODUnity
             // Ensures that all of the platform's ancestors exist.
             Action<Platform> AffirmAncestors = (platform) =>
             {
-                Legacy.Platform legacyParent = Legacy.Parent(platform.LegacyIdentifier);
+                var legacyParent = Legacy.Parent(platform.LegacyIdentifier);
 
                 if (legacyParent != Legacy.Platform.None)
                 {
@@ -236,7 +236,7 @@ namespace FMODUnity
                 }
                 else if (Legacy.IsGroup(legacyPlatform))
                 {
-                    PlatformGroup group = PlatformGroup.Create(Legacy.DisplayName(legacyPlatform), legacyPlatform);
+                    var group = PlatformGroup.Create(Legacy.DisplayName(legacyPlatform), legacyPlatform);
                     platformMap.Add(legacyPlatform, group);
                     newPlatforms.Add(group);
 
@@ -295,7 +295,7 @@ namespace FMODUnity
 
             while (groupsToProcess.Count > 0)
             {
-                Platform group = groupsToProcess.Dequeue();
+                var group = groupsToProcess.Dequeue();
 
                 // Ensure that all descendants exist
                 foreach (var child in platformMap.Values)
@@ -334,7 +334,7 @@ namespace FMODUnity
             }
 
             // Add all of the new platforms to the set of known platforms
-            foreach (Platform platform in newPlatforms)
+            foreach (var platform in newPlatforms)
             {
                 RuntimeSettings.AddPlatform(platform);
             }
@@ -346,9 +346,9 @@ namespace FMODUnity
             Platform.PropertyAccessor<TValue> property, Func<Legacy.Platform, Platform> getMigrationTarget)
             where TSetting : Legacy.PlatformSetting<TValue>
         {
-            foreach (TSetting setting in settings)
+            foreach (var setting in settings)
             {
-                Platform platform = getMigrationTarget(setting.Platform);
+                var platform = getMigrationTarget(setting.Platform);
 
                 if (platform != null)
                 {
@@ -380,7 +380,7 @@ namespace FMODUnity
 
         public void SetPlatformParent(Platform platform, Platform newParent)
         {
-            Platform oldParent = RuntimeSettings.FindPlatform(platform.ParentIdentifier);
+            var oldParent = RuntimeSettings.FindPlatform(platform.ParentIdentifier);
 
             if (oldParent != null)
             {
@@ -416,8 +416,8 @@ namespace FMODUnity
         public void SortPlatformChildren(Platform platform)
         {
             platform.ChildIdentifiers.Sort((a, b) => {
-                Platform platformA = RuntimeSettings.FindPlatform(a);
-                Platform platformB = RuntimeSettings.FindPlatform(b);
+                var platformA = RuntimeSettings.FindPlatform(a);
+                var platformB = RuntimeSettings.FindPlatform(b);
 
                 return platformA.DisplaySortOrder.CompareTo(platformB.DisplaySortOrder);
             });
@@ -459,12 +459,12 @@ namespace FMODUnity
                 return false;
             }
 
-            IEnumerable<string> missingPathsQuery = platform.GetBinaryFilePaths(target, binaryType)
+            var missingPathsQuery = platform.GetBinaryFilePaths(target, binaryType)
                 .Where(path => !File.Exists(path) && !Directory.Exists(path));
 
             if (missingPathsQuery.Any())
             {
-                string[] missingPaths = missingPathsQuery.Select(path => "- " + path).ToArray();
+                var missingPaths = missingPathsQuery.Select(path => "- " + path).ToArray();
 
                 string summary;
 
@@ -497,7 +497,7 @@ namespace FMODUnity
 
         public void PreprocessBuild(BuildTarget target, Platform.BinaryType binaryType)
         {
-            Platform platform = PlatformForBuildTarget[target];
+            var platform = PlatformForBuildTarget[target];
 
             PreprocessStaticPlugins(platform, target);
 
@@ -506,9 +506,9 @@ namespace FMODUnity
 
         private void PostprocessBuild(BuildTarget target)
         {
-            foreach(string path in binaryCompatibilitiesBeforeBuild.Keys)
+            foreach(var path in binaryCompatibilitiesBeforeBuild.Keys)
             {
-                PluginImporter importer = AssetImporter.GetAtPath(path) as PluginImporter;
+                var importer = AssetImporter.GetAtPath(path) as PluginImporter;
 
                 if (importer != null)
                 {
@@ -522,10 +522,10 @@ namespace FMODUnity
             // Ensure we don't have leftover temporary changes from a previous build.
             CleanTemporaryFiles();
 
-            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
 #if UNITY_2021_2_OR_NEWER
-            NamedBuildTarget namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
-            ScriptingImplementation scriptingBackend = PlayerSettings.GetScriptingBackend(namedBuildTarget);
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(namedBuildTarget);
 #else
             ScriptingImplementation scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
 #endif
@@ -548,7 +548,7 @@ namespace FMODUnity
                     // Generate registration code and import it so it's included in the build.
                     RuntimeUtils.DebugLogFormat("FMOD: Generating static plugin registration code in {0}", RegisterStaticPluginsAssetPathFull);
 
-                    string filePath = RegisterStaticPluginsAssetPathRelative.Replace("Assets", Application.dataPath);
+                    var filePath = RegisterStaticPluginsAssetPathRelative.Replace("Assets", Application.dataPath);
                     CodeGeneration.GenerateStaticPluginRegistration(filePath, platform, reportError);
                     AssetDatabase.ImportAsset(RegisterStaticPluginsAssetPathFull);
                 }
@@ -569,7 +569,7 @@ namespace FMODUnity
 
         public void DeleteTemporaryFile(string assetPath)
         {
-            bool assetExists = !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(assetPath));
+            var assetExists = !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(assetPath));
 
             if (assetExists && AssetDatabase.DeleteAsset(assetPath))
             {
@@ -579,16 +579,16 @@ namespace FMODUnity
 
         private static void SelectBinaries(Platform platform, BuildTarget target, Platform.BinaryType binaryType)
         {
-            string message = string.Format("FMOD: Selected binaries for platform {0}{1}:", target,
+            var message = string.Format("FMOD: Selected binaries for platform {0}{1}:", target,
                 (binaryType == Platform.BinaryType.Logging) ? " (development build)" : string.Empty);
 
             Instance.binaryCompatibilitiesBeforeBuild = new Dictionary<string, bool>();
 
-            HashSet<string> enabledPaths = new HashSet<string>();
+            var enabledPaths = new HashSet<string>();
 
-            foreach (string path in platform.GetBinaryAssetPaths(target, binaryType | Platform.BinaryType.Optional))
+            foreach (var path in platform.GetBinaryAssetPaths(target, binaryType | Platform.BinaryType.Optional))
             {
-                PluginImporter importer = AssetImporter.GetAtPath(path) as PluginImporter;
+                var importer = AssetImporter.GetAtPath(path) as PluginImporter;
 
                 if (importer is PluginImporter)
                 {
@@ -602,11 +602,11 @@ namespace FMODUnity
                 }
             }
 
-            foreach (string path in platform.GetBinaryAssetPaths(target, Platform.BinaryType.All))
+            foreach (var path in platform.GetBinaryAssetPaths(target, Platform.BinaryType.All))
             {
                 if (!enabledPaths.Contains(path))
                 {
-                    PluginImporter importer = AssetImporter.GetAtPath(path) as PluginImporter;
+                    var importer = AssetImporter.GetAtPath(path) as PluginImporter;
 
                     if (importer is PluginImporter)
                     {
@@ -648,7 +648,7 @@ namespace FMODUnity
                     throw new BuildFailedException(error);
                 }
 
-                bool androidPatchBuildPrevious = Settings.Instance.AndroidPatchBuild;
+                var androidPatchBuildPrevious = Settings.Instance.AndroidPatchBuild;
                 if ((report.summary.options & BuildOptions.PatchPackage) == BuildOptions.PatchPackage)
                 {
                     Settings.Instance.AndroidPatchBuild = true;
@@ -676,7 +676,7 @@ namespace FMODUnity
         {
             Settings.EditorSettings.CleanTemporaryFiles();
 
-            Platform.BinaryType binaryType = EditorUserBuildSettings.development
+            var binaryType = EditorUserBuildSettings.development
                 ? Platform.BinaryType.Logging
                 : Platform.BinaryType.Release;
 
@@ -687,7 +687,7 @@ namespace FMODUnity
 
                 if (EditorWindow.HasOpenInstances<BuildPlayerWindow>())
                 {
-                    GUIContent message =
+                    var message =
                         new GUIContent("FMOD detected issues with this platform!\nSee the Console for details.");
                     EditorWindow.GetWindow<BuildPlayerWindow>().ShowNotification(message, 10);
                 }

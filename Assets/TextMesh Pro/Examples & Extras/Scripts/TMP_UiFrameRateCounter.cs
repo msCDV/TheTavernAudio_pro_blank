@@ -23,14 +23,14 @@ namespace TMPro.Examples
 
         private FpsCounterAnchorPositions last_AnchorPosition;
 
-        void Awake()
+        private void Awake()
         {
             if (!enabled)
                 return;
 
             Application.targetFrameRate = 1000;
 
-            GameObject frameCounter = new GameObject("Frame Counter");
+            var frameCounter = new GameObject("Frame Counter");
             m_frameCounter_transform = frameCounter.AddComponent<RectTransform>();
 
             m_frameCounter_transform.SetParent(this.transform, false);
@@ -49,14 +49,14 @@ namespace TMPro.Examples
         }
 
 
-        void Start()
+        private void Start()
         {
             m_LastInterval = Time.realtimeSinceStartup;
             m_Frames = 0;
         }
 
 
-        void Update()
+        private void Update()
         {
             if (AnchorPosition != last_AnchorPosition)
                 Set_FrameCounter_Position(AnchorPosition);
@@ -64,13 +64,13 @@ namespace TMPro.Examples
             last_AnchorPosition = AnchorPosition;
 
             m_Frames += 1;
-            float timeNow = Time.realtimeSinceStartup;
+            var timeNow = Time.realtimeSinceStartup;
 
             if (timeNow > m_LastInterval + UpdateInterval)
             {
                 // display two fractional digits (f2 format)
-                float fps = m_Frames / (timeNow - m_LastInterval);
-                float ms = 1000.0f / Mathf.Max(fps, 0.00001f);
+                var fps = m_Frames / (timeNow - m_LastInterval);
+                var ms = 1000.0f / Mathf.Max(fps, 0.00001f);
 
                 if (fps < 30)
                     htmlColorTag = "<color=yellow>";
@@ -87,7 +87,7 @@ namespace TMPro.Examples
         }
 
 
-        void Set_FrameCounter_Position(FpsCounterAnchorPositions anchor_position)
+        private void Set_FrameCounter_Position(FpsCounterAnchorPositions anchor_position)
         {
             switch (anchor_position)
             {

@@ -1,21 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Fireplace_playback_new : MonoBehaviour
+public class FireplacePlaybackNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
     private void Start()
-    {        
-        audioSystem = FindObjectOfType<AudioSystem>();
+    {
+        _audioSystem = FindObjectOfType<AudioSystem>();
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (audioSystem != null)
+        if (_audioSystem != null)
         {
-            audioSystem.FireplaceOFF();
+            _audioSystem.FireplaceOff();
         }
         else
         {
@@ -25,6 +23,6 @@ public class Fireplace_playback_new : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        audioSystem.FireplaceON();
+        _audioSystem.FireplaceOn();
     }
 }

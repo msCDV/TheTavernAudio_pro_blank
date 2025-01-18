@@ -1,22 +1,16 @@
-using FMODUnity;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Outside_foot_switch_new : MonoBehaviour
+public class OutsideFootSwitchNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        audioSystem = GetComponent<AudioSystem>();
+        _audioSystem = GetComponent<AudioSystem>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        audioSystem.OutsideSnap();
+        _audioSystem.OutsideSnap();
     }
 }

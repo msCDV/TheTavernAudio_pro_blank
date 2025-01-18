@@ -50,20 +50,20 @@ namespace FMODUnity
              * Process frame is called from OnGUI() when auditioning.
              * Check playing to avoid retriggering sounds while scrubbing or repainting.
              */
-            bool playing = playable.GetGraph().IsPlaying();
+            var playing = playable.GetGraph().IsPlaying();
             if (!playing)
             {
                 return;
             }
 #endif //UNITY_EDITOR
 
-            int inputCount = playable.GetInputCount();
-            float time = (float)playable.GetGraph().GetRootPlayable(0).GetTime();
+            var inputCount = playable.GetInputCount();
+            var time = (float)playable.GetGraph().GetRootPlayable(0).GetTime();
 
-            for (int i = 0; i < inputCount; i++)
+            for (var i = 0; i < inputCount; i++)
             {
-                ScriptPlayable<FMODEventPlayableBehavior> inputPlayable = (ScriptPlayable<FMODEventPlayableBehavior>)playable.GetInput(i);
-                FMODEventPlayableBehavior input = inputPlayable.GetBehaviour();
+                var inputPlayable = (ScriptPlayable<FMODEventPlayableBehavior>)playable.GetInput(i);
+                var input = inputPlayable.GetBehaviour();
 
                 input.UpdateBehavior(time, volume);
             }

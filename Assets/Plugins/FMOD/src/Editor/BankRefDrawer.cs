@@ -10,11 +10,11 @@ namespace FMODUnity
         {
             Texture browseIcon = EditorUtils.LoadImage("SearchIconBlack.png");
 
-            SerializedProperty pathProperty = property;
+            var pathProperty = property;
 
             EditorGUI.BeginProperty(position, label, property);
 
-            Event e = Event.current;
+            var e = Event.current;
             if (e.type == EventType.DragPerform && position.Contains(e.mousePosition))
             {
                 if (DragAndDrop.objectReferences.Length > 0 &&
@@ -38,15 +38,15 @@ namespace FMODUnity
                 }
             }
 
-            float baseHeight = GUI.skin.textField.CalcSize(new GUIContent()).y;
+            var baseHeight = GUI.skin.textField.CalcSize(new GUIContent()).y;
 
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
             var buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.padding.top = buttonStyle.padding.bottom = 1;
 
-            Rect searchRect = new Rect(position.x + position.width - browseIcon.width - 15, position.y, browseIcon.width + 10, baseHeight);
-            Rect pathRect = new Rect(position.x, position.y, searchRect.x - position.x - 5, baseHeight);
+            var searchRect = new Rect(position.x + position.width - browseIcon.width - 15, position.y, browseIcon.width + 10, baseHeight);
+            var pathRect = new Rect(position.x, position.y, searchRect.x - position.x - 5, baseHeight);
 
             EditorGUI.PropertyField(pathRect, pathProperty, GUIContent.none);
             if (GUI.Button(searchRect, new GUIContent(browseIcon, "Select FMOD Bank"), buttonStyle))

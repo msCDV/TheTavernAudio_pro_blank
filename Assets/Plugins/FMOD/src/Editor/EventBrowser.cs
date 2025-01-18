@@ -47,7 +47,7 @@ namespace FMODUnity
         [MenuItem("FMOD/Event Browser", priority = 2)]
         public static void ShowWindow()
         {
-            EventBrowser eventBrowser = GetWindow<EventBrowser>("FMOD Events");
+            var eventBrowser = GetWindow<EventBrowser>("FMOD Events");
             eventBrowser.minSize = new Vector2(380, 600);
 
             eventBrowser.BeginStandaloneWindow();
@@ -71,9 +71,9 @@ namespace FMODUnity
 
         private void Update()
         {
-            bool forceRepaint = false;
+            var forceRepaint = false;
 
-            float[] currentMetering = EditorUtils.GetMetering();
+            var currentMetering = EditorUtils.GetMetering();
             if (cachedMetering == null || !cachedMetering.SequenceEqual(currentMetering))
             {
                 cachedMetering = currentMetering;
@@ -117,13 +117,13 @@ namespace FMODUnity
             private const string BankPrefix = "bank:/";
             private const string ParameterPrefix = "parameter:/";
 
-            bool expandNextFolderSet = false;
-            string nextFramedItemPath;
+            private bool expandNextFolderSet = false;
+            private string nextFramedItemPath;
             private string[] searchStringSplit;
 
-            IList<int> noSearchExpandState;
+            private IList<int> noSearchExpandState;
 
-            float oldBaseIndent;
+            private float oldBaseIndent;
 
             public TreeView(State state) : base(state.baseState)
             {
@@ -132,7 +132,7 @@ namespace FMODUnity
                 TypeFilter = state.typeFilter;
                 DragEnabled = state.dragEnabled;
 
-                for (int i = 0; i < state.itemPaths.Count; ++i)
+                for (var i = 0; i < state.itemPaths.Count; ++i)
                 {
                     itemIDs.Add(state.itemPaths[i], state.itemIDs[i]);
                 }
@@ -187,7 +187,7 @@ namespace FMODUnity
             private FolderItem CreateFolderItem(string name, string path, bool hasChildren, bool forceExpanded,
                 TreeViewItem parent)
             {
-                FolderItem item = new FolderItem(AffirmItemID("folder:" + path), 0, name);
+                var item = new FolderItem(AffirmItemID("folder:" + path), 0, name);
 
                 bool expanded;
 
@@ -278,7 +278,7 @@ namespace FMODUnity
                         EventManager.Parameters, p => p.StudioPath);
                 }
 
-                List<TreeViewItem> rows = new List<TreeViewItem>();
+                var rows = new List<TreeViewItem>();
 
                 AddChildrenInOrder(rows, rootItem);
 
@@ -318,12 +318,12 @@ namespace FMODUnity
                 TreeViewItem root =
                     CreateFolderItem(rootName, rootPath, records.Any(), TypeFilter != TypeFilter.All, rootItem);
 
-                List<TreeViewItem> currentFolderItems = new List<TreeViewItem>();
+                var currentFolderItems = new List<TreeViewItem>();
 
                 foreach (var record in records)
                 {
                     string leafName;
-                    TreeViewItem parent = CreateFolderItems(record.path, currentFolderItems, root, out leafName);
+                    var parent = CreateFolderItems(record.path, currentFolderItems, root, out leafName);
 
                     if (parent != null)
                     {
@@ -349,7 +349,7 @@ namespace FMODUnity
 
             private Texture2D IconForRecord(ScriptableObject record)
             {
-                EditorEventRef eventRef = record as EditorEventRef;
+                var eventRef = record as EditorEventRef;
                 if (eventRef != null)
                 {
                     if (eventRef.Path.StartsWith(SnapshotPrefix))
@@ -362,13 +362,13 @@ namespace FMODUnity
                     }
                 }
 
-                EditorBankRef bankRef = record as EditorBankRef;
+                var bankRef = record as EditorBankRef;
                 if (bankRef != null)
                 {
                     return bankIcon;
                 }
 
-                EditorParamRef paramRef = record as EditorParamRef;
+                var paramRef = record as EditorParamRef;
                 if (paramRef != null)
                 {
                     switch(paramRef.Type)
@@ -388,14 +388,14 @@ namespace FMODUnity
             private TreeViewItem CreateFolderItems(string path, List<TreeViewItem> currentFolderItems,
                 TreeViewItem root, out string leafName)
             {
-                TreeViewItem parent = root;
+                var parent = root;
 
-                char separator = '/';
+                var separator = '/';
 
                 // Skip the type prefix at the start of the path
-                int elementStart = path.IndexOf(separator) + 1;
+                var elementStart = path.IndexOf(separator) + 1;
 
-                for (int i = 0; ; ++i)
+                for (var i = 0; ; ++i)
                 {
                     if (!IsExpanded(parent.id))
                     {
@@ -403,7 +403,7 @@ namespace FMODUnity
                         return null;
                     }
 
-                    int elementEnd = path.IndexOf(separator, elementStart);
+                    var elementEnd = path.IndexOf(separator, elementStart);
 
                     if (elementEnd < 0)
                     {
@@ -411,7 +411,7 @@ namespace FMODUnity
                         break;
                     }
 
-                    string folderName = path.Substring(elementStart, elementEnd - elementStart);
+                    var folderName = path.Substring(elementStart, elementEnd - elementStart);
 
                     if (i < currentFolderItems.Count && folderName != currentFolderItems[i].displayName)
                     {
@@ -420,7 +420,7 @@ namespace FMODUnity
 
                     if (i == currentFolderItems.Count)
                     {
-                        FolderItem folderItem =
+                        var folderItem =
                             CreateFolderItem(folderName, path.Substring(0, elementEnd), true, false, parent);
 
                         currentFolderItems.Add(folderItem);
@@ -438,14 +438,14 @@ namespace FMODUnity
             {
                 if (item.children != null)
                 {
-                    foreach (TreeViewItem child in item.children.Where(child => child is FolderItem))
+                    foreach (var child in item.children.Where(child => child is FolderItem))
                     {
                         list.Add(child);
 
                         AddChildrenInOrder(list, child);
                     }
 
-                    foreach (TreeViewItem child in item.children.Where(child => !(child == null || child is FolderItem)))
+                    foreach (var child in item.children.Where(child => !(child == null || child is FolderItem)))
                     {
                         list.Add(child);
                     }
@@ -476,16 +476,16 @@ namespace FMODUnity
 
             protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
             {
-                IList<TreeViewItem> items = FindRows(args.draggedItemIDs);
+                var items = FindRows(args.draggedItemIDs);
 
                 if (items[0] is LeafItem)
                 {
-                    LeafItem item = items[0] as LeafItem;
+                    var item = items[0] as LeafItem;
 
                     DragAndDrop.PrepareStartDrag();
                     DragAndDrop.objectReferences = new UnityEngine.Object[] { Instantiate(item.Data) };
 
-                    string title = string.Empty;
+                    var title = string.Empty;
 
                     if (item.Data is EditorEventRef)
                     {
@@ -542,7 +542,7 @@ namespace FMODUnity
 
                 if (selectedIDs.Count > 0)
                 {
-                    TreeViewItem item = FindItem(selectedIDs[0], rootItem);
+                    var item = FindItem(selectedIDs[0], rootItem);
 
                     if (item is LeafItem)
                     {
@@ -553,7 +553,7 @@ namespace FMODUnity
 
             protected override void DoubleClickedItem(int id)
             {
-                TreeViewItem item = FindItem(id, rootItem);
+                var item = FindItem(id, rootItem);
 
                 if (item is LeafItem)
                 {
@@ -577,11 +577,11 @@ namespace FMODUnity
 
                 base.RowGUI(args);
 
-                TreeViewItem item = args.item;
+                var item = args.item;
 
                 if (Event.current.type == EventType.MouseUp && item is FolderItem && item.hasChildren)
                 {
-                    Rect rect = args.rowRect;
+                    var rect = args.rowRect;
                     rect.xMin = GetContentIndent(item);
 
                     if (rect.Contains(Event.current.mousePosition))
@@ -622,7 +622,7 @@ namespace FMODUnity
             {
                 get
                 {
-                    State result = new State(base.state);
+                    var result = new State(base.state);
 
                     if (noSearchExpandState != null)
                     {
@@ -670,7 +670,7 @@ namespace FMODUnity
 
             treeView.searchString = searchField.OnGUI(treeView.searchString);
 
-            Rect treeRect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            var treeRect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             treeRect.y += 2;
             treeRect.height -= 2;
 
@@ -692,7 +692,7 @@ namespace FMODUnity
         {
             if (Event.current.isKey)
             {
-                KeyCode keyCode = Event.current.keyCode;
+                var keyCode = Event.current.keyCode;
 
                 if ((keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter) && treeView.SelectedObject != null)
                 {
@@ -717,7 +717,7 @@ namespace FMODUnity
         {
             if (data is EditorEventRef)
             {
-                EditorEventRef eventRef = data as EditorEventRef;
+                var eventRef = data as EditorEventRef;
 
                 outputProperty.SetEventReference(eventRef.Guid, eventRef.Path);
 
@@ -793,7 +793,7 @@ namespace FMODUnity
 
                 AffirmResources();
 
-                ScriptableObject selectedObject = treeView.SelectedObject;
+                var selectedObject = treeView.SelectedObject;
 
                 if (selectedObject is EditorEventRef)
                 {
@@ -810,7 +810,7 @@ namespace FMODUnity
 
                     if (selectedObject is EditorEventRef)
                     {
-                        EditorEventRef eventRef = selectedObject as EditorEventRef;
+                        var eventRef = selectedObject as EditorEventRef;
 
                         if (eventRef.Path.StartsWith("event:"))
                         {
@@ -915,7 +915,7 @@ namespace FMODUnity
                 DrawTextField("Panning", selectedEvent.Is3D ? "3D" : "2D");
                 DrawTextField("Oneshot", selectedEvent.IsOneShot.ToString());
 
-                TimeSpan t = TimeSpan.FromMilliseconds(selectedEvent.Length);
+                var t = TimeSpan.FromMilliseconds(selectedEvent.Length);
                 DrawTextField("Length", selectedEvent.Length > 0 ? string.Format("{0:D2}:{1:D2}:{2:D3}", t.Minutes, t.Seconds, t.Milliseconds) : "N/A");
 
                 if (!isNarrow) DrawTextField("Streaming", selectedEvent.IsStream.ToString());
@@ -944,8 +944,8 @@ namespace FMODUnity
 
                 foreach (var sizeInfo in bank.FileSizes)
                 {
-                    int order = 0;
-                    long size = sizeInfo.Value;
+                    var order = 0;
+                    var size = sizeInfo.Value;
 
                     while (size >= 1024 && order + 1 < SizeSuffix.Length)
                     {
@@ -1029,8 +1029,8 @@ namespace FMODUnity
             {
                 AffirmResources();
 
-                FMOD.Studio.PLAYBACK_STATE previewState = FMOD.Studio.PLAYBACK_STATE.STOPPED;
-                bool paused = false;
+                var previewState = FMOD.Studio.PLAYBACK_STATE.STOPPED;
+                var paused = false;
 
                 if (PreviewEventInstance.isValid())
                 {
@@ -1038,8 +1038,8 @@ namespace FMODUnity
                     PreviewEventInstance.getPaused(out paused);
                 }
 
-                bool playing = previewState == FMOD.Studio.PLAYBACK_STATE.PLAYING;
-                bool stopped = previewState == FMOD.Studio.PLAYBACK_STATE.STOPPED;
+                var playing = previewState == FMOD.Studio.PLAYBACK_STATE.PLAYING;
+                var stopped = previewState == FMOD.Studio.PLAYBACK_STATE.STOPPED;
 
                 EditorGUILayout.BeginHorizontal();
 
@@ -1077,7 +1077,7 @@ namespace FMODUnity
                 }
                 if (GUILayout.Button(new GUIContent(openIcon, "Show Event in FMOD Studio"), buttonStyle, GUILayout.ExpandWidth(false)))
                 {
-                    string cmd = string.Format("studio.window.navigateTo(studio.project.lookup(\"{0}\"))", selectedEvent.Guid);
+                    var cmd = string.Format("studio.window.navigateTo(studio.project.lookup(\"{0}\"))", selectedEvent.Guid);
                     EditorUtils.SendScriptCommand(cmd);
                 }
 
@@ -1140,15 +1140,15 @@ namespace FMODUnity
                     arenaRect = GUILayoutUtility.GetLastRect();
                 }
 
-                Vector2 center = arenaRect.center;
-                Rect rect2 = new Rect(center.x + eventPosition.x - 6, center.y + eventPosition.y - 6, 12, 12);
+                var center = arenaRect.center;
+                var rect2 = new Rect(center.x + eventPosition.x - 6, center.y + eventPosition.y - 6, 12, 12);
                 GUI.DrawTexture(rect2, emitter);
 
                 GUI.color = originalColour;
 
                 if (selectedEvent.Is3D)
                 {
-                    bool useGUIEvent = false;
+                    var useGUIEvent = false;
 
                     switch (Event.current.type)
                     {
@@ -1176,17 +1176,17 @@ namespace FMODUnity
 
                     if (useGUIEvent)
                     {
-                        Vector2 newPosition = Event.current.mousePosition;
-                        Vector2 delta = newPosition - center;
+                        var newPosition = Event.current.mousePosition;
+                        var delta = newPosition - center;
 
                         float maximumDistance = (arena.width - emitter.width) / 2;
-                        float distance = Math.Min(delta.magnitude, maximumDistance);
+                        var distance = Math.Min(delta.magnitude, maximumDistance);
 
                         delta.Normalize();
                         eventPosition = delta * distance;
                         eventDistance = distance / maximumDistance * selectedEvent.MaxDistance;
 
-                        float angle = Mathf.Atan2(delta.y, delta.x);
+                        var angle = Mathf.Atan2(delta.y, delta.x);
                         eventOrientation = angle + Mathf.PI * 0.5f;
 
                         Event.current.Use();
@@ -1196,7 +1196,7 @@ namespace FMODUnity
                 if (PreviewEventInstance.isValid())
                 {
                     // Listener at origin
-                    FMOD.ATTRIBUTES_3D pos = new FMOD.ATTRIBUTES_3D();
+                    var pos = new FMOD.ATTRIBUTES_3D();
                     pos.position.x = (float)Math.Sin(eventOrientation) * eventDistance;
                     pos.position.y = (float)Math.Cos(eventOrientation) * eventDistance;
                     pos.forward.x = 1.0f;
@@ -1230,7 +1230,7 @@ namespace FMODUnity
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition,
                     GUILayout.Height(EditorGUIUtility.singleLineHeight * 7f));
 
-                foreach (EditorParamRef paramRef in selectedEvent.LocalParameters)
+                foreach (var paramRef in selectedEvent.LocalParameters)
                 {
                     if (!parameterValues.ContainsKey(paramRef.Name))
                     {
@@ -1243,7 +1243,7 @@ namespace FMODUnity
                 showGlobalParameters = selectedEvent.GlobalParameters.Count > 0 &&
                     EditorGUI.Foldout(EditorGUILayout.GetControlRect(), showGlobalParameters, "Global Parameters");
 
-                foreach (EditorParamRef paramRef in selectedEvent.GlobalParameters)
+                foreach (var paramRef in selectedEvent.GlobalParameters)
                 {
                     if (!parameterValues.ContainsKey(paramRef.Name))
                     {
@@ -1310,32 +1310,32 @@ namespace FMODUnity
             {
                 AffirmResources();
 
-                int meterHeight = minimized ? 86 : 128;
-                int meterWidth = (int)((128 / (float)meterOff.height) * meterOff.width);
+                var meterHeight = minimized ? 86 : 128;
+                var meterWidth = (int)((128 / (float)meterOff.height) * meterOff.width);
 
-                List<float> meterPositions = meterPositionsForSpeakerMode(speakerModeForChannelCount(metering.Length), meterWidth, 2, 6);
+                var meterPositions = meterPositionsForSpeakerMode(speakerModeForChannelCount(metering.Length), meterWidth, 2, 6);
 
                 const int MeterCountMaximum = 16;
 
-                int minimumWidth = meterWidth * MeterCountMaximum;
+                var minimumWidth = meterWidth * MeterCountMaximum;
 
-                Rect fullRect = GUILayoutUtility.GetRect(minimumWidth, meterHeight,
+                var fullRect = GUILayoutUtility.GetRect(minimumWidth, meterHeight,
                     GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
 
-                float baseX = fullRect.x + (fullRect.width - (meterWidth * metering.Length)) / 2;
+                var baseX = fullRect.x + (fullRect.width - (meterWidth * metering.Length)) / 2;
 
-                for(int i = 0; i < metering.Length; i++)
+                for(var i = 0; i < metering.Length; i++)
                 {
-                    Rect meterRect = new Rect(baseX + meterPositions[i], fullRect.y, meterWidth, fullRect.height);
+                    var meterRect = new Rect(baseX + meterPositions[i], fullRect.y, meterWidth, fullRect.height);
 
                     GUI.DrawTexture(meterRect, meterOff);
 
-                    float db = 20.0f * Mathf.Log10(metering[i] * Mathf.Sqrt(2.0f));
+                    var db = 20.0f * Mathf.Log10(metering[i] * Mathf.Sqrt(2.0f));
                     db = Mathf.Clamp(db, -80.0f, 10.0f);
                     float visible = 0;
-                    int[] segmentPixels = new int[] { 0, 18, 38, 60, 89, 130, 187, 244, 300 };
-                    float[] segmentDB = new float[] { -80.0f, -60.0f, -50.0f, -40.0f, -30.0f, -20.0f, -10.0f, 0, 10.0f };
-                    int segment = 1;
+                    var segmentPixels = new int[] { 0, 18, 38, 60, 89, 130, 187, 244, 300 };
+                    var segmentDB = new float[] { -80.0f, -60.0f, -50.0f, -40.0f, -30.0f, -20.0f, -10.0f, 0, 10.0f };
+                    var segment = 1;
                     while (segmentDB[segment] < db)
                     {
                         segment++;
@@ -1344,8 +1344,8 @@ namespace FMODUnity
 
                     visible *= fullRect.height / (float)meterOff.height;
 
-                    Rect levelPosRect = new Rect(meterRect.x, fullRect.height - visible + meterRect.y, meterWidth, visible);
-                    Rect levelUVRect = new Rect(0, 0, 1.0f, visible / fullRect.height);
+                    var levelPosRect = new Rect(meterRect.x, fullRect.height - visible + meterRect.y, meterWidth, visible);
+                    var levelUVRect = new Rect(0, 0, 1.0f, visible / fullRect.height);
                     GUI.DrawTextureWithTexCoords(levelPosRect, meterOn, levelUVRect);
                 }
             }
@@ -1373,7 +1373,7 @@ namespace FMODUnity
 
             private List<float> meterPositionsForSpeakerMode(FMOD.SPEAKERMODE mode, float meterWidth, float groupGap, float lfeGap)
             {
-                List<float> offsets = new List<float>();
+                var offsets = new List<float>();
 
                 switch(mode)
                 {
@@ -1558,7 +1558,7 @@ namespace FMODUnity
         {
             BeginInspectorPopup(property, TypeFilter.Event);
 
-            SerializedProperty pathProperty = property.FindPropertyRelative("Path");
+            var pathProperty = property.FindPropertyRelative("Path");
 
             if (!string.IsNullOrEmpty(pathProperty.stringValue))
             {
@@ -1663,17 +1663,17 @@ namespace FMODUnity
             {
                 if (IsDroppable(DragAndDrop.objectReferences))
                 {
-                    UnityEngine.Object data = DragAndDrop.objectReferences[0];
+                    var data = DragAndDrop.objectReferences[0];
 
-                    GameObject target = EditorUtility.InstanceIDToObject(instance) as GameObject;
+                    var target = EditorUtility.InstanceIDToObject(instance) as GameObject;
 
                     if (data is EditorEventRef)
                     {
                         Undo.SetCurrentGroupName("Add Studio Event Emitter");
 
-                        StudioEventEmitter emitter = Undo.AddComponent<StudioEventEmitter>(target);
+                        var emitter = Undo.AddComponent<StudioEventEmitter>(target);
 
-                        EditorEventRef eventRef = data as EditorEventRef;
+                        var eventRef = data as EditorEventRef;
                         emitter.EventReference.Path = eventRef.Path;
                         emitter.EventReference.Guid = eventRef.Guid;
                     }
@@ -1681,7 +1681,7 @@ namespace FMODUnity
                     {
                         Undo.SetCurrentGroupName("Add Studio Bank Loader");
 
-                        StudioBankLoader loader = Undo.AddComponent<StudioBankLoader>(target);
+                        var loader = Undo.AddComponent<StudioBankLoader>(target);
                         loader.Banks = new List<string>();
                         loader.Banks.Add((data as EditorBankRef).Name);
                     }
@@ -1689,7 +1689,7 @@ namespace FMODUnity
                     {
                         Undo.SetCurrentGroupName("Add Studio Global Parameter Trigger");
 
-                        StudioGlobalParameterTrigger trigger = Undo.AddComponent<StudioGlobalParameterTrigger>(target);
+                        var trigger = Undo.AddComponent<StudioGlobalParameterTrigger>(target);
                         trigger.Parameter = (data as EditorParamRef).Name;
                     }
 
@@ -1706,19 +1706,19 @@ namespace FMODUnity
         {
             if (Event.current.type == EventType.DragPerform && IsDroppable(DragAndDrop.objectReferences))
             {
-                UnityEngine.Object data = DragAndDrop.objectReferences[0];
+                var data = DragAndDrop.objectReferences[0];
                 GameObject newObject;
 
                 if (data is EditorEventRef)
                 {
-                    EditorEventRef eventRef = data as EditorEventRef;
+                    var eventRef = data as EditorEventRef;
 
-                    string path = eventRef.Path;
+                    var path = eventRef.Path;
 
-                    string name = path.Substring(path.LastIndexOf("/") + 1);
+                    var name = path.Substring(path.LastIndexOf("/") + 1);
                     newObject = new GameObject(name + " Emitter");
 
-                    StudioEventEmitter emitter = newObject.AddComponent<StudioEventEmitter>();
+                    var emitter = newObject.AddComponent<StudioEventEmitter>();
                     emitter.EventReference.Path = path;
                     emitter.EventReference.Guid = eventRef.Guid;
 
@@ -1728,7 +1728,7 @@ namespace FMODUnity
                 {
                     newObject = new GameObject("Studio Bank Loader");
 
-                    StudioBankLoader loader = newObject.AddComponent<StudioBankLoader>();
+                    var loader = newObject.AddComponent<StudioBankLoader>();
                     loader.Banks = new List<string>();
                     loader.Banks.Add((data as EditorBankRef).Name);
 
@@ -1736,18 +1736,18 @@ namespace FMODUnity
                 }
                 else // data is EditorParamRef
                 {
-                    string name = (data as EditorParamRef).Name;
+                    var name = (data as EditorParamRef).Name;
 
                     newObject = new GameObject(name + " Trigger");
 
-                    StudioGlobalParameterTrigger trigger = newObject.AddComponent<StudioGlobalParameterTrigger>();
+                    var trigger = newObject.AddComponent<StudioGlobalParameterTrigger>();
                     trigger.Parameter = name;
 
                     Undo.RegisterCreatedObjectUndo(newObject, "Create Studio Global Parameter Trigger");
                 }
 
-                Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-                object hit = HandleUtility.RaySnap(ray);
+                var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+                var hit = HandleUtility.RaySnap(ray);
 
                 if (hit != null)
                 {

@@ -8,7 +8,7 @@ namespace FMODUnity
     {
         public bool MouseDrag(Event e)
         {
-            bool isDragging = false;
+            var isDragging = false;
 
             if (e.type == EventType.DragPerform)
             {
@@ -25,9 +25,9 @@ namespace FMODUnity
             Texture addIcon = EditorUtils.LoadImage("AddIcon.png");
 
             EditorGUI.BeginProperty(position, label, property);
-            SerializedProperty pathProperty = property;
+            var pathProperty = property;
 
-            Event e = Event.current;
+            var e = Event.current;
             if (MouseDrag(e) && position.Contains(e.mousePosition))
             {
                 if (DragAndDrop.objectReferences.Length > 0 &&
@@ -51,18 +51,18 @@ namespace FMODUnity
                 }
             }
 
-            float baseHeight = GUI.skin.textField.CalcSize(new GUIContent()).y;
+            var baseHeight = GUI.skin.textField.CalcSize(new GUIContent()).y;
 
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+            var buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.padding.top = 1;
             buttonStyle.padding.bottom = 1;
 
-            Rect addRect = new Rect(position.x + position.width - addIcon.width - 7, position.y, addIcon.width + 7, baseHeight);
-            Rect openRect = new Rect(addRect.x - openIcon.width - 7, position.y, openIcon.width + 6, baseHeight);
-            Rect searchRect = new Rect(openRect.x - browseIcon.width - 9, position.y, browseIcon.width + 8, baseHeight);
-            Rect pathRect = new Rect(position.x, position.y, searchRect.x - position.x - 3, baseHeight);
+            var addRect = new Rect(position.x + position.width - addIcon.width - 7, position.y, addIcon.width + 7, baseHeight);
+            var openRect = new Rect(addRect.x - openIcon.width - 7, position.y, openIcon.width + 6, baseHeight);
+            var searchRect = new Rect(openRect.x - browseIcon.width - 9, position.y, browseIcon.width + 8, baseHeight);
+            var pathRect = new Rect(position.x, position.y, searchRect.x - position.x - 3, baseHeight);
 
             EditorGUI.PropertyField(pathRect, pathProperty, GUIContent.none);
 

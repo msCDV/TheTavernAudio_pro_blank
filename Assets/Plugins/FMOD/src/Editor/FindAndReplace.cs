@@ -47,7 +47,7 @@ namespace FMODUnity
 
         private void OnGUI()
         {
-            bool doFind = false;
+            var doFind = false;
             if ((Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return))
             {
                 Event.current.Use();
@@ -132,7 +132,7 @@ namespace FMODUnity
 
         private void FindNext()
         {
-            for (int i = lastMatch + 1; i < emitters.Count; i++)
+            for (var i = lastMatch + 1; i < emitters.Count; i++)
             {
                 if (emitters[i].EventReference.Path.IndexOf(findText, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)
                 {
@@ -149,8 +149,8 @@ namespace FMODUnity
 
         private void ReplaceAll()
         {
-            int replaced = 0;
-            for (int i = 0; i < emitters.Count; i++)
+            var replaced = 0;
+            for (var i = 0; i < emitters.Count; i++)
             {
                 if (ReplaceText(emitters[i]))
                 {
@@ -164,12 +164,12 @@ namespace FMODUnity
 
         private bool ReplaceText(StudioEventEmitter emitter)
         {
-            int findLength = findText.Length;
-            int replaceLength = replaceText.Length;
-            int position = 0;
+            var findLength = findText.Length;
+            var replaceLength = replaceText.Length;
+            var position = 0;
             var serializedObject = new SerializedObject(emitter);
             var pathProperty = serializedObject.FindProperty("Event");
-            string path = pathProperty.stringValue;
+            var path = pathProperty.stringValue;
             position = path.IndexOf(findText, position, StringComparison.CurrentCultureIgnoreCase);
             while (position >= 0)
             {

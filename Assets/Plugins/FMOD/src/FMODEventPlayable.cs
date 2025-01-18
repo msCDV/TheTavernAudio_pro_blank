@@ -73,16 +73,16 @@ namespace FMODUnity
             if (!CachedParameters && !EventReference.IsNull)
 #endif
             {
-                for (int i = 0; i < Parameters.Length; i++)
+                for (var i = 0; i < Parameters.Length; i++)
                 {
                     FMOD.Studio.PARAMETER_DESCRIPTION parameterDescription;
                     eventDescription.getParameterDescriptionByName(Parameters[i].Name, out parameterDescription);
                     Parameters[i].ID = parameterDescription.id;
                 }
 
-                List<ParameterAutomationLink> parameterLinks = Template.ParameterLinks;
+                var parameterLinks = Template.ParameterLinks;
 
-                for (int i = 0; i < parameterLinks.Count; i++)
+                for (var i = 0; i < parameterLinks.Count; i++)
                 {
                     FMOD.Studio.PARAMETER_DESCRIPTION parameterDescription;
                     eventDescription.getParameterDescriptionByName(parameterLinks[i].Name, out parameterDescription);
@@ -102,7 +102,7 @@ namespace FMODUnity
             else
             {
                 // Handled by the editor auditioning system.
-                EventArgs args = new EventArgs();
+                var args = new EventArgs();
                 OnCreatePlayable.Invoke(this, args);
             }
 
@@ -134,7 +134,7 @@ namespace FMODUnity
                 }
                 else
                 {
-                    int index = EventReference.Path.LastIndexOf("/");
+                    var index = EventReference.Path.LastIndexOf("/");
                     OwningClip.displayName = EventReference.Path.Substring(index + 1);
                 }
             }
@@ -264,7 +264,7 @@ namespace FMODUnity
                 else
                 {
                     // Handled by the editor auditioning system.
-                    EventArgs args = new EventArgs();
+                    var args = new EventArgs();
                     Enter.Invoke(this, args);
                     eventInstance = args.eventInstance;
                 }
@@ -292,7 +292,7 @@ namespace FMODUnity
                 else
                 {
                     // Handled by the editor auditioning system.
-                    EventArgs args = new EventArgs();
+                    var args = new EventArgs();
                     args.eventInstance = eventInstance;
                     Exit.Invoke(this, args);
                 }
@@ -303,9 +303,9 @@ namespace FMODUnity
         {
             if (eventInstance.isValid())
             {
-                foreach (ParameterAutomationLink link in ParameterLinks)
+                foreach (var link in ParameterLinks)
                 {
-                    float value = ParameterAutomation.GetValue(link.Slot);
+                    var value = ParameterAutomation.GetValue(link.Slot);
                     eventInstance.setParameterByID(link.ID, value);
                 }
             }
@@ -350,7 +350,7 @@ namespace FMODUnity
             else
             {
                 // Handled by the editor auditioning system.
-                EventArgs args = new EventArgs();
+                var args = new EventArgs();
                 args.eventInstance = eventInstance;
                 GraphStop.Invoke(this, args);
             }

@@ -78,7 +78,7 @@ namespace FMODUnity
             DictionaryAsset projectSettings = AssetDatabase.LoadAssetAtPath(PathUtility.FromProject(LudiqCore.Paths.projectSettings), typeof(DictionaryAsset)) as DictionaryAsset;
             List<LooseAssemblyName> assemblyOptions = projectSettings.dictionary["assemblyOptions"] as List<LooseAssemblyName>;
 #else
-            List<LooseAssemblyName> assemblyOptions = BoltCore.Configuration.assemblyOptions;
+            var assemblyOptions = BoltCore.Configuration.assemblyOptions;
 #endif
 
             if (!assemblyOptions.Contains("FMODUnity"))
@@ -93,17 +93,17 @@ namespace FMODUnity
 #if (UNITY_BOLT_EXIST)
             List<Type> typeOptions = projectSettings.dictionary["typeOptions"] as List<Type>;
 #else
-            List<Type> typeOptions = BoltCore.Configuration.typeOptions;
+            var typeOptions = BoltCore.Configuration.typeOptions;
 #endif
-            Assembly fmodUnityAssembly = Assembly.Load("FMODUnity");
-            Assembly fmodUnityResonanceAssembly = Assembly.Load("FMODUnityResonance");
+            var fmodUnityAssembly = Assembly.Load("FMODUnity");
+            var fmodUnityResonanceAssembly = Assembly.Load("FMODUnityResonance");
 
-            List<Type> allTypes = new List<Type>(GetTypesForNamespace(fmodUnityAssembly, "FMOD"));
+            var allTypes = new List<Type>(GetTypesForNamespace(fmodUnityAssembly, "FMOD"));
             allTypes.AddRange(GetTypesForNamespace(fmodUnityAssembly, "FMOD.Studio"));
             allTypes.AddRange(GetTypesForNamespace(fmodUnityAssembly, "FMODUnity"));
             allTypes.AddRange(GetTypesForNamespace(fmodUnityResonanceAssembly, "FMODUnityResonance"));
 
-            foreach (Type type in allTypes)
+            foreach (var type in allTypes)
             {
                 if (!typeOptions.Contains(type))
                 {

@@ -1,74 +1,55 @@
-using FMODUnity;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.XR;
 
-public class Footsteps_new : MonoBehaviour
+public class FootstepsNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
-    private float lastFootstepTime = 0f;
-    
+    private float _lastFootstepTime;
+
     private void Start()
     {
-        audioSystem = FindObjectOfType<AudioSystem>();
-        //Footsteps.distToGround = GetComponent<Collider>().bounds.extents.y;
+        _audioSystem = FindObjectOfType<AudioSystem>();
     }
 
     private void Update()
     {
         Jump();
     }
-    void FixedUpdate()
+
+    private void FixedUpdate()
     {
         Walking();
         Running();
     }
 
-    // FOOSTEPS WALKING FUNCTION
     private void Walking()
     {
-        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
-            if (audioSystem.IsGrounded() && Time.time - lastFootstepTime > 0.5f)
-            {
-                lastFootstepTime = Time.time;
-                audioSystem.PlayFootsteps();
-            }
-        }
+        if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0) return;
+        if (!_audioSystem.IsGrounded() || !(Time.time - _lastFootstepTime > 0.5f)) return;
+        _lastFootstepTime = Time.time;
+        _audioSystem.PlayFootsteps();
     }
 
-    // FOOSTEPS RUNNING FUNCTION
     private void Running()
     {
-        if ((Input.GetKey(KeyCode.LeftShift) && Input.GetAxisRaw("Horizontal") != 0) || (Input.GetKey(KeyCode.LeftShift) && Input.GetAxisRaw("Vertical") != 0))
-        {
-            if (audioSystem.IsGrounded() && Time.time - lastFootstepTime > 0.25f)
-            {
-                lastFootstepTime = Time.time;
-                audioSystem.PlayFootsteps();
-            }
-        }
+        if ((!Input.GetKey(KeyCode.LeftShift) || Input.GetAxisRaw("Horizontal") == 0) &&
+            (!Input.GetKey(KeyCode.LeftShift) || Input.GetAxisRaw("Vertical") == 0)) return;
+        if (!_audioSystem.IsGrounded() || !(Time.time - _lastFootstepTime > 0.25f)) return;
+        _lastFootstepTime = Time.time;
+        _audioSystem.PlayFootsteps();
     }
 
-    // PLAY JUMPING SOUND
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log(audioSystem.IsGrounded());
-            audioSystem.PlayJump();
-        }
+        if (!Input.GetKeyDown(KeyCode.Space)) return;
+        _audioSystem.PlayJump();
     }
 
-    // PLAY LANDING SOUND
     private void OnCollisionEnter(Collision col)
     {
-        if (audioSystem.IsGrounded() && audioSystem.isGrounded == false)
+        if (_audioSystem.IsGrounded() && _audioSystem.isGrounded == false)
         {
-            audioSystem.PlayLanding();
+            _audioSystem.PlayLanding();
         }
-    }    
+    }
 }

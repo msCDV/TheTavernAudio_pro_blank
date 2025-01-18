@@ -151,7 +151,7 @@ fmod_editor.log";
 
         public static void SetUpdateTaskComplete(UpdateTaskType type)
         {
-            foreach (UpdateTask task in updateTasks.Where(t => t.Type == type))
+            foreach (var task in updateTasks.Where(t => t.Type == type))
             {
                 task.IsComplete = true;
             }
@@ -163,7 +163,7 @@ fmod_editor.log";
             {
                 updateTaskStatusChecked = true;
 
-                foreach (UpdateTask task in updateTasks)
+                foreach (var task in updateTasks)
                 {
                     task.IsComplete = task.CheckComplete();
                 }
@@ -181,7 +181,7 @@ fmod_editor.log";
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 return;
 
-            Settings settings = Settings.Instance;
+            var settings = Settings.Instance;
 
             if (settings.CurrentVersion != FMOD.VERSION.number)
             {
@@ -214,7 +214,7 @@ fmod_editor.log";
             instance.minSize = new Vector2(750, 500);
             instance.maxSize = instance.minSize;
             var position = new Rect(Vector2.zero, instance.minSize);
-            Vector2 screenCenter = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height) / 2;
+            var screenCenter = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height) / 2;
             position.center = screenCenter / EditorGUIUtility.pixelsPerPoint;
             instance.position = position;
         }
@@ -322,7 +322,7 @@ fmod_editor.log";
 
                             using (var check = new EditorGUI.ChangeCheckScope())
                             {
-                                bool hide = Settings.Instance.HideSetupWizard;
+                                var hide = Settings.Instance.HideSetupWizard;
 
                                 hide = EditorGUILayout.Toggle("Do not display this again", hide);
 
@@ -419,7 +419,7 @@ fmod_editor.log";
         {
             GUILayout.FlexibleSpace();
 
-            string message = string.Format("Welcome to FMOD for Unity {0}.",
+            var message = string.Format("Welcome to FMOD for Unity {0}.",
                 EditorUtils.VersionString(FMOD.VERSION.number));
 
             EditorGUILayout.LabelField(message, titleStyle);
@@ -436,10 +436,10 @@ fmod_editor.log";
             using (new EditorGUILayout.VerticalScope("box", GUILayout.Width(150)))
             {
                 crumbStyle.alignment = TextAnchor.MiddleCenter;
-                Color oldColor = GUI.backgroundColor;
+                var oldColor = GUI.backgroundColor;
                 EditorGUILayout.Space();
 
-                for (int i = 0; i < pageNames.Count; i++)
+                for (var i = 0; i < pageNames.Count; i++)
                 {
                     if (i > 0 && i < pageNames.Count - 1)
                     {
@@ -475,14 +475,14 @@ fmod_editor.log";
             {
                 float buttonWidth = 0;
 
-                foreach (UpdateTask task in updateTasks)
+                foreach (var task in updateTasks)
                 {
                     buttonWidth = Math.Max(buttonWidth, buttonStyle.CalcSize(new GUIContent(task.Name)).x);
                 }
 
-                float buttonHeight = buttonStyle.CalcSize(GUIContent.none).y;
+                var buttonHeight = buttonStyle.CalcSize(GUIContent.none).y;
 
-                foreach (UpdateTask task in updateTasks)
+                foreach (var task in updateTasks)
                 {
                     using (new GUILayout.HorizontalScope())
                     {
@@ -566,7 +566,7 @@ fmod_editor.log";
             {
                 EditorGUILayout.Space();
 
-                Color oldColor = GUI.backgroundColor;
+                var oldColor = GUI.backgroundColor;
                 GUI.backgroundColor = Color.green;
 
                 using (new GUILayout.HorizontalScope("box"))
@@ -579,7 +579,7 @@ fmod_editor.log";
 
                     using (new GUILayout.VerticalScope())
                     {
-                        Settings settings = Settings.Instance;
+                        var settings = Settings.Instance;
 
                         if (settings.HasSourceProject)
                         {
@@ -635,7 +635,7 @@ fmod_editor.log";
 
                     if (GUILayout.Button("Replace Unity " + ((unityListeners != null && unityListeners.Length > 1) ? "Listeners" : "Listener") + " with FMOD Audio Listener.", buttonStyle))
                     {
-                        for (int i = 0; i < unityListeners.Length; i++)
+                        for (var i = 0; i < unityListeners.Length; i++)
                         {
                             var listener = unityListeners[i];
                             if (listener)
@@ -660,7 +660,7 @@ fmod_editor.log";
         {
             using (new EditorGUILayout.VerticalScope("box"))
             {
-                bool bUnityListenerType = false;
+                var bUnityListenerType = false;
                 if (typeof(T) == typeof(AudioListener))
                 {
                     bUnityListenerType = true;
@@ -678,7 +678,7 @@ fmod_editor.log";
                     using (var scrollView = new EditorGUILayout.ScrollViewScope(scrollPos, GUILayout.ExpandWidth(true)))
                     {
                         scrollPos = scrollView.scrollPosition;
-                        foreach (T l in listeners)
+                        foreach (var l in listeners)
                         {
                             var listener = l as Component;
                             if (listener != null && GUILayout.Button(listener.gameObject.name, GUILayout.ExpandWidth(true)))
@@ -780,13 +780,13 @@ fmod_editor.log";
         private void EndPage()
         {
             GUILayout.FlexibleSpace();
-            bool completed = true;
+            var completed = true;
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
                 using (new EditorGUILayout.VerticalScope())
                 {
-                    for (int i = 1; i < pageNames.Count - 1; i++)
+                    for (var i = 1; i < pageNames.Count - 1; i++)
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
@@ -805,7 +805,7 @@ fmod_editor.log";
                 GUILayout.FlexibleSpace();
             }
 
-            string msg = "";
+            var msg = "";
             if (completed)
             {
                 // All complete
@@ -879,7 +879,7 @@ fmod_editor.log";
                     }
                 }
 
-                string button2Text = "Next";
+                var button2Text = "Next";
                 if (currentPage == 0) button2Text = "Start";
                 else if (currentPage == PAGES.End) button2Text = "Close";
                 else button2Text = "Next";
@@ -902,7 +902,7 @@ fmod_editor.log";
         {
             GUILayout.Space(25);
 
-            string message = string.Format("Welcome to FMOD for Unity {0}.",
+            var message = string.Format("Welcome to FMOD for Unity {0}.",
                 EditorUtils.VersionString(FMOD.VERSION.number));
 
             EditorGUILayout.LabelField(message, titleStyle);
@@ -920,11 +920,11 @@ fmod_editor.log";
             using (new GUILayout.VerticalScope(columnStyle))
             {
 
-                foreach (StagingSystem.UpdateStep step in StagingSystem.UpdateSteps)
+                foreach (var step in StagingSystem.UpdateSteps)
                 {
-                    bool complete = step.Stage < nextStagingStep.Stage;
+                    var complete = step.Stage < nextStagingStep.Stage;
 
-                    Color oldColor = GUI.backgroundColor;
+                    var oldColor = GUI.backgroundColor;
                     GUI.backgroundColor = complete ? Color.green : Color.yellow;
 
                     using (new GUILayout.HorizontalScope(GUI.skin.box))
@@ -1023,7 +1023,7 @@ fmod_editor.log";
 
         private class AudioSourceItem : TreeViewItem
         {
-            const string audioIcon = "AudioSource Icon";
+            private const string audioIcon = "AudioSource Icon";
             public AudioSourceItem(AudioSource source) : base(source.GetHashCode())
             {
                 displayName = (source.clip ? source.clip.name : "None");
@@ -1034,16 +1034,16 @@ fmod_editor.log";
         private class ParentItem : TreeViewItem
         {
             public GameObject gameObject;
-            const string goIcon = "GameObject Icon";
-            const string prefabIcon = "Prefab Icon";
-            const string prefabModelIcon = "PrefabModel Icon";
-            const string prefabVariantIcon = "PrefabVariant Icon";
+            private const string goIcon = "GameObject Icon";
+            private const string prefabIcon = "Prefab Icon";
+            private const string prefabModelIcon = "PrefabModel Icon";
+            private const string prefabVariantIcon = "PrefabVariant Icon";
 
             public ParentItem(GameObject go) : base(go.GetHashCode(), 0, go.name)
             {
                 gameObject = go;
                 var foundAudio = gameObject.GetComponents<AudioSource>();
-                for (int i = 0; i < foundAudio.Length; i++)
+                for (var i = 0; i < foundAudio.Length; i++)
                 {
                     AddChild(new AudioSourceItem(foundAudio[i]));
                 }
@@ -1069,8 +1069,8 @@ fmod_editor.log";
         private class SceneItem : TreeViewItem
         {
             public Scene m_scene;
-            const string sceneIcon = "SceneAsset Icon";
-            const string folderIcon = "Folder Icon";
+            private const string sceneIcon = "SceneAsset Icon";
+            private const string folderIcon = "Folder Icon";
 
             public SceneItem(Scene scene) : base (scene.GetHashCode())
             {
@@ -1090,15 +1090,15 @@ fmod_editor.log";
 
         private void CreateItems(TreeViewItem root, AudioSource[] audioSources)
         {
-            for(int i = 0; i < audioSources.Length; i++)
+            for(var i = 0; i < audioSources.Length; i++)
             {
-                AudioSource audioSource = audioSources[i];
+                var audioSource = audioSources[i];
 
-                GameObject obj = audioSource.gameObject;
+                var obj = audioSource.gameObject;
                 var sourceItem = FindItem(obj.GetHashCode(), root);
                 if (sourceItem == null)
                 {
-                    List<GameObject> gameObjects = new List<GameObject>();
+                    var gameObjects = new List<GameObject>();
                     gameObjects.Add(obj);
                     while (obj.transform.parent != null)
                     {
@@ -1130,7 +1130,7 @@ fmod_editor.log";
 
         public void Drawlayout()
         {
-            Rect rect = EditorGUILayout.GetControlRect(false, BodyHeight);
+            var rect = EditorGUILayout.GetControlRect(false, BodyHeight);
             rect = EditorGUI.IndentedRect(rect);
 
             OnGUI(rect);

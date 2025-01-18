@@ -32,8 +32,7 @@ namespace TMPro.Examples
         private Material m_material02;
 
 
-
-        IEnumerator Start()
+        private IEnumerator Start()
         {
 
 
@@ -93,7 +92,7 @@ namespace TMPro.Examples
 
 
 
-            for (int i = 0; i <= 1000000; i++)
+            for (var i = 0; i <= 1000000; i++)
             {
                 if (BenchmarkType == 0)
                 {

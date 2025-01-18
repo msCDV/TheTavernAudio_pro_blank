@@ -29,11 +29,11 @@ namespace FMODUnity
 
         public void TriggerParameters()
         {
-            bool paramNameSpecified = !string.IsNullOrEmpty(Parameter);
+            var paramNameSpecified = !string.IsNullOrEmpty(Parameter);
             if (paramNameSpecified)
             {
-                FMOD.RESULT result = FMOD.RESULT.OK;
-                bool paramIDNeedsLookup = string.IsNullOrEmpty(parameterDescription.name);
+                var result = FMOD.RESULT.OK;
+                var paramIDNeedsLookup = string.IsNullOrEmpty(parameterDescription.name);
                 if (paramIDNeedsLookup)
                 {
                     result = RuntimeManager.StudioSystem.getParameterDescriptionByName(Parameter, out parameterDescription);

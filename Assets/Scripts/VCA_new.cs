@@ -1,23 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using FMODUnity;
-using FMOD.Studio;
 
-public class VCA_new : MonoBehaviour
+public class VcaNew : MonoBehaviour
 {
-    private AudioSystem audioSystem;
+    private AudioSystem _audioSystem;
 
     private void Start()
     {
-        audioSystem = GetComponent<AudioSystem>();
+        _audioSystem = GetComponent<AudioSystem>();
     }
 
-    void Update()
+    private void Update()
     {
-        audioSystem.ToggleMute(KeyCode.U, ref audioSystem.muteActive, audioSystem.GlobalVCA);
-        audioSystem.ToggleMute(KeyCode.I, ref audioSystem.musicMuteActive, audioSystem.MusicVCA);
-        audioSystem.ToggleMute(KeyCode.O, ref audioSystem.tavernMuteActive, audioSystem.TavernVCA);
-        audioSystem.ToggleMute(KeyCode.P, ref audioSystem.outsideMuteActive, audioSystem.OutsideVCA);
-    }    
+        AudioSystem.ToggleMute(KeyCode.U, ref _audioSystem.muteActive, _audioSystem.GlobalVca);
+        AudioSystem.ToggleMute(KeyCode.I, ref _audioSystem.musicMuteActive, _audioSystem.MusicVca);
+        AudioSystem.ToggleMute(KeyCode.O, ref _audioSystem.tavernMuteActive, _audioSystem.TavernVca);
+        AudioSystem.ToggleMute(KeyCode.P, ref _audioSystem.outsideMuteActive, _audioSystem.OutsideVca);
+    }
 }

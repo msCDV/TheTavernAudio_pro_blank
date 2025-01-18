@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{9dc36b30-89d3-4139-a4a9-c3183f42fae8}">
+		<property name="name">
+			<value>throwSpell</value>
+		</property>
+		<relationship name="folder">
+			<destination>{51e6489d-6a1c-4514-afdf-acce30363fd5}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{e79c3b92-12a8-4398-a0a7-7569a4d15f7d}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{e79c3b92-12a8-4398-a0a7-7569a4d15f7d}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>false</value>
+			<value>true</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

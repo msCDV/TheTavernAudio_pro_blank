@@ -184,7 +184,7 @@ namespace FMODUnity
 
         protected virtual IEnumerable<string> GetBinaryPaths(BuildTarget buildTarget, BinaryType binaryType, string prefix)
         {
-            foreach (BinaryFileInfo info in GetBinaryFileInfo(buildTarget, binaryType))
+            foreach (var info in GetBinaryFileInfo(buildTarget, binaryType))
             {
                 yield return info.LatestLocation();
             }
@@ -209,9 +209,9 @@ namespace FMODUnity
 
             public IEnumerable<string> OldLocations()
             {
-                foreach (FileLayout layout in OldFileLayouts)
+                foreach (var layout in OldFileLayouts)
                 {
-                    string location = GetLocation(layout);
+                    var location = GetLocation(layout);
 
                     if (location != null)
                     {
@@ -222,7 +222,7 @@ namespace FMODUnity
 
             private string GetLocation(FileLayout layout)
             {
-                string basePath = GetBasePath(layout);
+                var basePath = GetBasePath(layout);
 
                 if (basePath == null)
                 {
@@ -260,7 +260,7 @@ namespace FMODUnity
 
             protected override string GetBasePath(FileLayout layout)
             {
-                BinaryAssetFolderInfo info = platform.GetBinaryAssetFolder(buildTarget);
+                var info = platform.GetBinaryAssetFolder(buildTarget);
 
                 if (layout < info.oldestLayout)
                 {
@@ -342,11 +342,11 @@ namespace FMODUnity
 
         internal IEnumerable<BinaryFileInfo> GetBinaryFileInfo(BuildTarget buildTarget, BinaryType binaryType)
         {
-            bool allVariants = (binaryType & BinaryType.AllVariants) == BinaryType.AllVariants;
+            var allVariants = (binaryType & BinaryType.AllVariants) == BinaryType.AllVariants;
 
             if ((binaryType & BinaryType.Release) == BinaryType.Release)
             {
-                foreach (FileRecord record in GetBinaryFiles(buildTarget, allVariants, ""))
+                foreach (var record in GetBinaryFiles(buildTarget, allVariants, ""))
                 {
                     yield return CreateFileInfo(record, buildTarget, BinaryType.Release);
                 }
@@ -354,7 +354,7 @@ namespace FMODUnity
 
             if ((binaryType & BinaryType.Logging) == BinaryType.Logging)
             {
-                foreach (FileRecord record in GetBinaryFiles(buildTarget, allVariants, "L"))
+                foreach (var record in GetBinaryFiles(buildTarget, allVariants, "L"))
                 {
                     yield return CreateFileInfo(record, buildTarget, BinaryType.Logging);
                 }
@@ -362,7 +362,7 @@ namespace FMODUnity
 
             if ((binaryType & BinaryType.Optional) == BinaryType.Optional)
             {
-                foreach (FileRecord record in GetOptionalBinaryFiles(buildTarget, allVariants))
+                foreach (var record in GetOptionalBinaryFiles(buildTarget, allVariants))
                 {
                     yield return CreateFileInfo(record, buildTarget, BinaryType.Optional);
                 }
@@ -381,7 +381,7 @@ namespace FMODUnity
 
             protected override string GetBasePath(FileLayout layout)
             {
-                BinaryAssetFolderInfo info = platform.GetBinaryAssetFolder(platform.GetBuildTargets().First());
+                var info = platform.GetBinaryAssetFolder(platform.GetBuildTargets().First());
 
                 if (layout < info.oldestLayout)
                 {
@@ -405,7 +405,7 @@ namespace FMODUnity
 
         internal IEnumerable<SourceFileInfo> GetSourceFileInfo()
         {
-            foreach (FileRecord record in GetSourceFiles())
+            foreach (var record in GetSourceFiles())
             {
                 yield return new SourceFileInfo(this, record);
             }
@@ -418,7 +418,7 @@ namespace FMODUnity
 
         internal virtual IEnumerable<string> GetObsoleteAssetPaths()
         {
-            foreach (string path in GetObsoleteFiles())
+            foreach (var path in GetObsoleteFiles())
             {
                 yield return $"{RuntimeUtils.PluginBasePath}/{path}";
             }
@@ -519,30 +519,30 @@ namespace FMODUnity
         // Loads dynamic FMOD plugins for this platform.
         internal virtual void LoadDynamicPlugins(FMOD.System coreSystem, Action<FMOD.RESULT, string> reportResult)
         {
-            List<string> pluginNames = Plugins;
+            var pluginNames = Plugins;
 
             if (pluginNames == null)
             {
                 return;
             }
 
-            foreach (string pluginName in pluginNames)
+            foreach (var pluginName in pluginNames)
             {
                 if (string.IsNullOrEmpty(pluginName))
                 {
                     continue;
                 }
 
-                string pluginPath = GetPluginPath(pluginName);
+                var pluginPath = GetPluginPath(pluginName);
                 uint handle;
 
-                FMOD.RESULT result = coreSystem.loadPlugin(pluginPath, out handle);
+                var result = coreSystem.loadPlugin(pluginPath, out handle);
 
 #if UNITY_64 || UNITY_EDITOR_64
                 // Add a "64" suffix and try again
                 if (result == FMOD.RESULT.ERR_FILE_BAD || result == FMOD.RESULT.ERR_FILE_NOTFOUND)
                 {
-                    string pluginPath64 = GetPluginPath(pluginName + "64");
+                    var pluginPath64 = GetPluginPath(pluginName + "64");
                     result = coreSystem.loadPlugin(pluginPath64, out handle);
                 }
 #endif
@@ -761,11 +761,11 @@ namespace FMODUnity
             // Get the (possibly inherited) value of the property for the given platform.
             public T Get(Platform platform)
             {
-                for (Platform current = platform; current != null; current = current.Parent)
+                for (var current = platform; current != null; current = current.Parent)
                 {
                     if (current.Active)
                     {
-                        Property<T> property = Getter(current.Properties);
+                        var property = Getter(current.Properties);
 
                         if (property.HasValue)
                         {
@@ -788,7 +788,7 @@ namespace FMODUnity
             // platform's parent.
             public void Set(Platform platform, T value)
             {
-                Property<T> property = Getter(platform.Properties);
+                var property = Getter(platform.Properties);
 
                 property.Value = value;
                 property.HasValue = true;
